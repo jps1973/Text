@@ -284,8 +284,30 @@ LRESULT CALLBACK MainWndProc( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARA
 		{
 			// A close message
 
-			// Destroy main window
-			DestroyWindow( hWndMain );
+			// Save rich edit window text
+			if( RichEditWindowSaveText( TEXT_FILE_NAME ) )
+			{
+				// Successfully saved rich edit window text
+
+				// Destroy main window
+				DestroyWindow( hWndMain );
+
+			} // End of successfully saved rich edit window text
+			else
+			{
+				// Unable to save rich edit window text
+
+				// Ensure that user is ok to close
+				if( MessageBox( hWndMain, RICH_EDIT_WINDOW_UNABLE_TO_SAVE_ERROR_MESSAGE, WARNING_MESSAGE_CAPTION, ( MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2 ) ) == IDYES )
+				{
+					// User is ok to close
+
+					// Destroy main window
+					DestroyWindow( hWndMain );
+
+				} // End of user is ok to close
+
+			} // End of unable to save rich edit window text
 
 			// Break out of switch
 			break;
@@ -431,6 +453,16 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE, LPTSTR, int nCmdShow )
 
 				// Update main window
 				UpdateWindow( hWndMain );
+
+				// Load rich edit window text
+				if( RichEditWindowLoadText( TEXT_FILE_NAME ) )
+				{
+					// Successfully loaded rich edit window text
+
+					// Select rich edit window text
+					RichEditWindowSelect();
+
+				} // End of successfully loaded rich edit window text
 
 				// Message loop
 				while( GetMessage( &msg, NULL, 0, 0 ) > 0 )

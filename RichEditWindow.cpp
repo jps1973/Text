@@ -74,12 +74,141 @@ BOOL RichEditWindowHandleCommandMessage( WPARAM wParam, LPARAM, void( *lpDoubleC
 
 } // End of function RichEditWindowHandleCommandMessage
 
+BOOL RichEditWindowLoadText( LPCTSTR lpszFileName )
+{
+	BOOL bResult = FALSE;
+
+	HANDLE hFile;
+
+	// Open file
+	hFile = CreateFile( lpszFileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL );
+
+	// Ensure that file was opened
+	if( hFile != INVALID_HANDLE_VALUE )
+	{
+		// Successfully opened file
+		DWORD dwFileSize;
+
+		// Get file size
+		dwFileSize = GetFileSize( hFile, NULL );
+
+		// Ensure that file size was got
+		if( dwFileSize != INVALID_FILE_SIZE )
+		{
+			// Successfully got file size
+
+			// Allocate string memory
+			LPTSTR lpszFileText = new char[ STRING_LENGTH + sizeof( char ) ];
+
+			// Read file text
+			if( ReadFile (hFile, lpszFileText, dwFileSize, NULL, NULL ) )
+			{
+				// Successfully read file text
+
+				// Terminate file text
+				lpszFileText[ dwFileSize ] = ( char )NULL;
+
+				// Set rich edit window text
+				if( SendMessage( g_hWndRichEdit, WM_SETTEXT, ( WPARAM )NULL, ( LPARAM )lpszFileText ) )
+				{
+					// Successfully set rich edit window text
+
+					// Update return value
+					bResult = TRUE;
+
+				} // End of successfully set rich edit window text
+
+			} // End of successfully read file text
+
+			// Free string memory
+			delete [] lpszFileText;
+
+		} // End of successfully got file size
+
+		// Close file
+		CloseHandle( hFile );
+
+	} // End of successfully opened file
+
+	return bResult;
+
+} // End of function RichEditWindowLoadText
+
 BOOL RichEditWindowMove( int nX, int nY, int nWidth, int nHeight, BOOL bRepaint )
 {
 	// Move rich edit window
 	return ::MoveWindow( g_hWndRichEdit, nX, nY, nWidth, nHeight, bRepaint );
 
 } // End of function RichEditWindowMove
+
+BOOL RichEditWindowSaveText( LPCTSTR lpszFileName )
+{
+	BOOL bResult = FALSE;
+
+	HANDLE hFile;
+
+	// Open file
+	hFile = CreateFile( lpszFileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+
+	// Ensure that file was opened
+	if( hFile != INVALID_HANDLE_VALUE )
+	{
+		// Successfully opened file
+		DWORD dwTextLength;
+
+		// Get rich edit window text length
+		dwTextLength = SendMessage( g_hWndRichEdit, WM_GETTEXTLENGTH, ( WPARAM )NULL, ( LPARAM )NULL );
+
+		// Ensure that window is not empty
+		if( dwTextLength )
+		{
+			// Window is not empty
+			DWORD dwBufferLength;
+			LPCTSTR lpszFileText;
+
+			// Calculate buffer length
+			dwBufferLength = ( dwTextLength + sizeof( char ) );
+
+			// Allocate string memory
+			lpszFileText = new char[ dwBufferLength ];
+
+			// Get rich edit window text
+			if( SendMessage( g_hWndRichEdit, WM_GETTEXT, ( WPARAM )dwBufferLength, ( LPARAM )lpszFileText ) )
+			{
+				// Successfully got rich edit window text
+
+				// Write text to file
+				if( WriteFile( hFile, lpszFileText, lstrlen( lpszFileText ), NULL, NULL ) )
+				{
+					// Successfully wrote text to file
+
+					// Update return value
+					bResult = TRUE;
+
+				} // End of successfully wrote text to file
+
+			} // End of successfully got rich edit window text
+
+			// Free string memory
+			delete [] lpszFileText;
+
+		} // End of window is not empty
+
+		// Close file
+		CloseHandle( hFile );
+
+	} // End of successfully opened file
+
+	return bResult;
+
+} // End of function RichEditWindowSaveText
+
+void RichEditWindowSelect( int nStart, int nEnd )
+{
+	// Select rich edit window text
+	::SendMessage( g_hWndRichEdit, EM_SETSEL, ( WPARAM )nStart, ( LPARAM )nEnd );
+
+} // End of function RichEditWindowSelect
 
 HWND RichEditWindowSetFocus()
 {
