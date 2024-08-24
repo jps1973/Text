@@ -52,7 +52,7 @@ BOOL RichEditWindowDelete();
 
 BOOL RichEditWindowGetRect( LPRECT lpRect );
 
-BOOL RichEditWindowHandleCommandMessage( WPARAM wParam, LPARAM lParam, void( *lpDoubleClickFunction )( LPCTSTR lpszItemText ), void( *lpSelectionChangedFunction )( LPCTSTR lpszItemText ) );
+BOOL RichEditWindowHandleCommandMessage( WPARAM wParam, LPARAM lParam, void( *lpChangeFunction )(), void( *lpSelectionChangeFunction )( CHARRANGE cr ) );
 
 BOOL RichEditWindowIsTextSelected();
 

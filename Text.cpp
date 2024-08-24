@@ -2,6 +2,14 @@
 
 #include "Text.h"
 
+void RichEditWindowChangeFunction()
+{
+} // End of function RichEditWindowChangeFunction
+
+void RichEditWindowSelectionChangeFunction( CHARRANGE )
+{
+} // End of function RichEditWindowSelectionChangeFunction
+
 BOOL UpdateMenuTtem( HMENU hMenu, int nItemID, BOOL bEnable )
 {
 	BOOL bResult;
@@ -339,8 +347,30 @@ LRESULT CALLBACK MainWndProc( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARA
 
 					// Source window is ( HWND )lParam
 
-					// Call default procedure
-					lr = DefWindowProc( hWndMain, uMessage, wParam, lParam );
+					// See if command is from rich edit window
+					if( IsRichEditWindow( ( HWND )lParam ) )
+					{
+						// Command is from rich edit window
+
+						// Handle command from rich edit window
+						if( !( RichEditWindowHandleCommandMessage( wParam, lParam, &RichEditWindowChangeFunction, &RichEditWindowSelectionChangeFunction ) ) )
+						{
+							// Command was not handled from rich edit window
+
+							// Call default procedure
+							lr = DefWindowProc( hWndMain, uMessage, wParam, lParam );
+
+						} // End of command was not handled from rich edit window
+
+					} // End of command is from rich edit window
+					else
+					{
+						// Command is from rich edit window
+
+						// Call default procedure
+						lr = DefWindowProc( hWndMain, uMessage, wParam, lParam );
+
+					} // End of command is from rich edit window
 
 					// Break out of switch
 					break;

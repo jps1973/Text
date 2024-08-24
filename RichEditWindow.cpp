@@ -250,13 +250,41 @@ BOOL RichEditWindowGetRect( LPRECT lpRect )
 
 } // End of function RichEditWindowGetRect
 
-BOOL RichEditWindowHandleCommandMessage( WPARAM wParam, LPARAM, void( *lpDoubleClickFunction )( LPCTSTR lpszItemText ), void( *lpSelectionChangedFunction )( LPCTSTR lpszItemText ) )
+BOOL RichEditWindowHandleCommandMessage( WPARAM wParam, LPARAM lParam, void( *lpChangeFunction )(), void( *lpSelectionChangeFunction )( CHARRANGE cr ) )
 {
 	BOOL bResult = FALSE;
 
 	// Select rich edit window notification code
 	switch( HIWORD( wParam ) )
 	{
+		case EN_CHANGE:
+		{
+			// An edit window change function
+
+			// Call change function
+			( *lpChangeFunction )();
+
+			// Update return value
+			bResult = TRUE;
+
+			// Break out of switch
+			break;
+
+		} // End of an edit window change function
+		case EN_SELCHANGE:
+		{
+			// An edit window selection change function
+
+			// Call selection change function
+			( *lpSelectionChangeFunction )( ( ( SELCHANGE * )lParam )->chrg );
+
+			// Update return value
+			bResult = TRUE;
+
+			// Break out of switch
+			break;
+
+		} // End of an edit window selection change function
 		default:
 		{
 			// Default notification code
