@@ -187,9 +187,118 @@ LRESULT CALLBACK MainWndProc( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARA
 			// Select command
 			switch( LOWORD( wParam ) )
 			{
+				case IDM_EDIT_UNDO:
+				{
+					// An edit undo command
+
+					// Undo
+					RichEditWindowUndo();
+
+					// Clear status bar window
+					StatusBarWindowSetText( NULL );
+
+					// Break out of switch
+					break;
+
+				} // End of an edit undo command
+				case IDM_EDIT_REDO:
+				{
+					// An edit redo command
+
+					// Redo
+					RichEditWindowRedo();
+
+					// Clear status bar window
+					StatusBarWindowSetText( NULL );
+
+					// Break out of switch
+					break;
+
+				} // End of an edit redo command
+				case IDM_EDIT_CUT:
+				{
+					// An edit cut command
+
+					// Cut text
+					if( RichEditWindowCut() )
+					{
+						// Successfully cut text
+
+						// Show message on status bar window
+						StatusBarWindowSetText( RICH_EDIT_WINDOW_SUCCESSFULLY_CUT_TEXT_STATUS_MESSAGE );
+
+					} // End of successfully cut text
+
+					// Break out of switch
+					break;
+
+				} // End of an edit cut command
+				case IDM_EDIT_COPY:
+				{
+					// An edit copy command
+
+					// Copy text
+					if( RichEditWindowCopy() )
+					{
+						// Successfully copied text
+
+						// Show message on status bar window
+						StatusBarWindowSetText( RICH_EDIT_WINDOW_SUCCESSFULLY_COPIED_TEXT_STATUS_MESSAGE );
+
+					} // End of successfully copied text
+
+					// Break out of switch
+					break;
+
+				} // End of an edit copy command
+				case IDM_EDIT_PASTE:
+				{
+					// An edit paste command
+
+					// Show message
+					RichEditWindowPaste();
+
+					// Clear status bar window
+					StatusBarWindowSetText( NULL );
+
+					// Break out of switch
+					break;
+
+				} // End of an edit paste command
+				case IDM_EDIT_DELETE:
+				{
+					// An edit delete command
+
+					// Show message
+					RichEditWindowDelete();
+
+					// Clear status bar window
+					StatusBarWindowSetText( NULL );
+
+					// Break out of switch
+					break;
+
+				} // End of an edit delete command
+				case IDM_EDIT_SELECT_ALL:
+				{
+					// An edit select all command
+
+					// Select all text on rich edit window
+					RichEditWindowSelect();
+
+					// Clear status bar window
+					StatusBarWindowSetText( NULL );
+
+					// Break out of switch
+					break;
+
+				} // End of an edit select all command
 				case IDM_HELP_ABOUT:
 				{
 					// A help about command
+
+					// Clear status bar window
+					StatusBarWindowSetText( NULL );
 
 					// Show about message
 					ShowAboutMessage( hWndMain );
@@ -298,7 +407,7 @@ LRESULT CALLBACK MainWndProc( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARA
 				// Unable to save rich edit window text
 
 				// Ensure that user is ok to close
-				if( MessageBox( hWndMain, RICH_EDIT_WINDOW_UNABLE_TO_SAVE_ERROR_MESSAGE, WARNING_MESSAGE_CAPTION, ( MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2 ) ) == IDYES )
+				if( MessageBox( hWndMain, RICH_EDIT_WINDOW_UNABLE_TO_SAVE_WARNING_MESSAGE, WARNING_MESSAGE_CAPTION, ( MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2 ) ) == IDYES )
 				{
 					// User is ok to close
 
