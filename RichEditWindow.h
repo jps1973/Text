@@ -36,6 +36,12 @@
 
 BOOL IsRichEditWindow( HWND hWnd );
 
+BOOL RichEditWindowCanPaste();
+
+BOOL RichEditWindowCanRedo();
+
+BOOL RichEditWindowCanUndo();
+
 BOOL RichEditWindowCopy();
 
 BOOL RichEditWindowCreate( HWND hWndParent, HINSTANCE hInstance );
@@ -47,6 +53,8 @@ BOOL RichEditWindowDelete();
 BOOL RichEditWindowGetRect( LPRECT lpRect );
 
 BOOL RichEditWindowHandleCommandMessage( WPARAM wParam, LPARAM lParam, void( *lpDoubleClickFunction )( LPCTSTR lpszItemText ), void( *lpSelectionChangedFunction )( LPCTSTR lpszItemText ) );
+
+BOOL RichEditWindowIsTextSelected();
 
 BOOL RichEditWindowLoadText( LPCTSTR lpszFileName );
 

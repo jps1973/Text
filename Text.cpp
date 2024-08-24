@@ -2,6 +2,32 @@
 
 #include "Text.h"
 
+BOOL UpdateMenuTtem( HMENU hMenu, int nItemID, BOOL bEnable )
+{
+	BOOL bResult;
+
+	// See if menu item is to be enabled
+	if( bEnable )
+	{
+		// Menu item is to be enabled
+
+		// Enable menu item
+		bResult = EnableMenuItem( hMenu, nItemID, MF_ENABLED );
+
+	} // End of menu item is to be enabled
+	else
+	{
+		// Menu item is to be disabled
+
+		// Disable menu item
+		bResult = EnableMenuItem( hMenu, nItemID, MF_DISABLED );
+
+	} // End of menu item is to be disabled
+
+	return bResult;
+
+} // End of function UpdateMenuTtem
+
 int ShowAboutMessage( HWND hWndParent )
 {
 	int nResult = 0;
@@ -378,9 +404,21 @@ LRESULT CALLBACK MainWndProc( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARA
 		{
 			// A context menu message
 			HMENU hMenuContext;
+			BOOL bIsTextSelected;
+
+			// See if any text is selected on rich edit window
+			bIsTextSelected = RichEditWindowIsTextSelected();
 
 			// Load context menu
 			hMenuContext = LoadMenu( NULL, MAKEINTRESOURCE( IDR_CONTEXT_MENU ) );
+
+			// Update context menu items
+			UpdateMenuTtem( hMenuContext, IDM_EDIT_UNDO,	RichEditWindowCanUndo() );
+			UpdateMenuTtem( hMenuContext, IDM_EDIT_REDO,	RichEditWindowCanRedo() );
+			UpdateMenuTtem( hMenuContext, IDM_EDIT_CUT,		bIsTextSelected );
+			UpdateMenuTtem( hMenuContext, IDM_EDIT_COPY,	bIsTextSelected );
+			UpdateMenuTtem( hMenuContext, IDM_EDIT_PASTE,	RichEditWindowCanPaste() );
+			UpdateMenuTtem( hMenuContext, IDM_EDIT_DELETE,	bIsTextSelected );
 
 			// Show context menu
 			TrackPopupMenu( GetSubMenu( hMenuContext, 0 ), ( TPM_LEFTALIGN | TPM_LEFTBUTTON ), LOWORD( lParam ), HIWORD( lParam ), 0, hWndMain, NULL );

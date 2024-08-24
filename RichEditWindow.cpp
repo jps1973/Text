@@ -12,6 +12,27 @@ BOOL IsRichEditWindow( HWND hWnd )
 
 } // End of function IsRichEditWindow
 
+BOOL RichEditWindowCanPaste()
+{
+	// See if clipboard contains text
+	return IsClipboardFormatAvailable( CF_TEXT );
+
+} // End of function RichEditWindowCanPaste
+
+BOOL RichEditWindowCanRedo()
+{
+	// See if redo is possible
+	return SendMessage( g_hWndRichEdit, EM_CANREDO, ( WPARAM )NULL, ( LPARAM )NULL );
+
+} // End of function RichEditWindowCanRedo
+
+BOOL RichEditWindowCanUndo()
+{
+	// See if undo is possible
+	return SendMessage( g_hWndRichEdit, EM_CANUNDO, ( WPARAM )NULL, ( LPARAM )NULL );
+
+} // End of function RichEditWindowCanUndo
+
 BOOL RichEditWindowCopy()
 {
 	BOOL bResult = FALSE;
@@ -252,6 +273,34 @@ BOOL RichEditWindowHandleCommandMessage( WPARAM wParam, LPARAM, void( *lpDoubleC
 	return bResult;
 
 } // End of function RichEditWindowHandleCommandMessage
+
+BOOL RichEditWindowIsTextSelected()
+{
+	BOOL bResult = FALSE;
+
+	DWORD dwStart;
+	DWORD dwEnd;
+
+	// Get selection
+	if( SendMessage( g_hWndRichEdit, EM_GETSEL, ( WPARAM )&dwStart, ( LPARAM )&dwEnd ) )
+	{
+		// Successfully got selection
+
+		// See if any text is selected
+		if( dwStart != dwEnd )
+		{
+			// Some text is selected
+
+			// Update return value
+			bResult = TRUE;
+
+		} // End of some text is selected
+
+	} // End of successfully got selection
+
+	return bResult;
+
+} // End of function RichEditWindowIsTextSelected
 
 BOOL RichEditWindowLoadText( LPCTSTR lpszFileName )
 {
