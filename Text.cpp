@@ -2,12 +2,38 @@
 
 #include "Text.h"
 
-void RichEditWindowChangeFunction()
+void RichEditWindowUpdateFunction()
 {
-} // End of function RichEditWindowChangeFunction
+	// Update toolbar buttons
+	ToolBarWindowEnableButton( IDM_EDIT_UNDO, RichEditWindowCanUndo() );
+	ToolBarWindowEnableButton( IDM_EDIT_REDO, RichEditWindowCanRedo() );
 
-void RichEditWindowSelectionChangeFunction( CHARRANGE )
+} // End of function RichEditWindowUpdateFunction
+
+void RichEditWindowSelectionChangeFunction( int nLength )
 {
+	// See if text is selected
+	if( nLength > 0 )
+	{
+		// Some text is selected
+
+		// Enable toolbar buttons
+		ToolBarWindowEnableButton( IDM_EDIT_CUT,	TRUE );
+		ToolBarWindowEnableButton( IDM_EDIT_COPY,	TRUE );
+		ToolBarWindowEnableButton( IDM_EDIT_DELETE,	TRUE );
+
+	} // End of some text is selected
+	else
+	{
+		// No text is selected
+
+		// Disable toolbar buttons
+		ToolBarWindowEnableButton( IDM_EDIT_CUT,	FALSE );
+		ToolBarWindowEnableButton( IDM_EDIT_COPY,	FALSE );
+		ToolBarWindowEnableButton( IDM_EDIT_DELETE,	FALSE );
+
+	} // End of no text is selected
+
 } // End of function RichEditWindowSelectionChangeFunction
 
 BOOL UpdateMenuTtem( HMENU hMenu, int nItemID, BOOL bEnable )
@@ -77,32 +103,39 @@ LRESULT CALLBACK MainWndProc( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARA
 			// Get instance
 			hInstance = ( ( LPCREATESTRUCT )lParam )->hInstance;
 
-			// Create rich edit window
-			if( RichEditWindowCreate( hWndMain, hInstance ) )
+			// Create toolbar window
+			if( ToolBarWindowCreate( hWndMain, hInstance ) )
 			{
 				// Successfully created rich edit window
-				HFONT hFont;
 
-				// Get (rich edit window font) font
-				hFont = ( HFONT )GetStockObject( ANSI_FIXED_FONT );
-
-				// Set rich edit window font
-				RichEditWindowSetFont( hFont );
-
-				// Create status bar window
-				if( StatusBarWindowCreate( hWndMain, hInstance ) )
+				// Create rich edit window
+				if( RichEditWindowCreate( hWndMain, hInstance ) )
 				{
-					// Successfully created status bar window
+					// Successfully created rich edit window
+					HFONT hFont;
 
-					// Get (status bar window) font
-					hFont = ( HFONT )GetStockObject( DEFAULT_GUI_FONT );
+					// Get (rich edit window font) font
+					hFont = ( HFONT )GetStockObject( ANSI_FIXED_FONT );
 
-					// Set status bar window font
-					StatusBarWindowSetFont( hFont );
+					// Set rich edit window font
+					RichEditWindowSetFont( hFont );
 
-				} // End of successfully created status bar window
+					// Create status bar window
+					if( StatusBarWindowCreate( hWndMain, hInstance ) )
+					{
+						// Successfully created status bar window
 
-			} // End of successfully created rich edit window
+						// Get (status bar window) font
+						hFont = ( HFONT )GetStockObject( DEFAULT_GUI_FONT );
+
+						// Set status bar window font
+						StatusBarWindowSetFont( hFont );
+
+					} // End of successfully created status bar window
+
+				} // End of successfully created rich edit window
+
+			} // End of successfully created toolbar window
 
 			// Break out of switch
 			break;
@@ -114,25 +147,34 @@ LRESULT CALLBACK MainWndProc( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARA
 			int nClientWidth;
 			int nClientHeight;
 			RECT rcStatus;
+			RECT rcToolbar;
 			int nStatusWindowHeight;
 			int nRichEditWindowHeight;
+			int nToolbarWindowHeight;
 
 			// Store client width and height
 			nClientWidth	= ( int )LOWORD( lParam );
 			nClientHeight	= ( int )HIWORD( lParam );
 
+			// Auto-size toolbar window
+			ToolBarWindowAutoSize();
+
 			// Size status bar window
 			StatusBarWindowSize();
+
+			// Get toolbar window size
+			ToolBarWindowGetRect( &rcToolbar );
 
 			// Get status window size
 			StatusBarWindowGetRect( &rcStatus );
 
 			// Calculate window sizes
 			nStatusWindowHeight		= ( rcStatus.bottom - rcStatus.top );
-			nRichEditWindowHeight	= ( nClientHeight - nStatusWindowHeight );
+			nToolbarWindowHeight	= ( rcToolbar.bottom - rcToolbar.top );
+			nRichEditWindowHeight	= ( nClientHeight - ( nStatusWindowHeight + nToolbarWindowHeight ) );
 
 			// Move rich edit window
-			RichEditWindowMove( 0, 0, nClientWidth, nRichEditWindowHeight, TRUE );
+			RichEditWindowMove( 0, nToolbarWindowHeight, nClientWidth, nRichEditWindowHeight, TRUE );
 
 			// Break out of switch
 			break;
@@ -347,30 +389,30 @@ LRESULT CALLBACK MainWndProc( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARA
 
 					// Source window is ( HWND )lParam
 
-					// See if command is from rich edit window
+					// See if command message is from rich edit window
 					if( IsRichEditWindow( ( HWND )lParam ) )
 					{
-						// Command is from rich edit window
+						// Command message is from rich edit window
 
-						// Handle command from rich edit window
-						if( !( RichEditWindowHandleCommandMessage( wParam, lParam, &RichEditWindowChangeFunction, &RichEditWindowSelectionChangeFunction ) ) )
+						// Handle command message from rich edit window
+						if( !( RichEditWindowHandleCommandMessage( wParam, lParam, &RichEditWindowUpdateFunction ) ) )
 						{
-							// Command was not handled from rich edit window
+							// Command message was not handled from rich edit window
 
 							// Call default procedure
 							lr = DefWindowProc( hWndMain, uMessage, wParam, lParam );
 
-						} // End of command was not handled from rich edit window
+						} // End of command message was not handled from rich edit window
 
-					} // End of command is from rich edit window
+					} // End of command message is from rich edit window
 					else
 					{
-						// Command is from rich edit window
+						// Command message is not from rich edit window
 
 						// Call default procedure
 						lr = DefWindowProc( hWndMain, uMessage, wParam, lParam );
 
-					} // End of command is from rich edit window
+					} // End of command message is not from rich edit window
 
 					// Break out of switch
 					break;
@@ -422,9 +464,35 @@ LRESULT CALLBACK MainWndProc( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARA
 		case WM_NOTIFY:
 		{
 			// A notify message
+			LPNMHDR lpNmHdr;
 
-			// Call default procedure
-			lr = DefWindowProc( hWndMain, uMessage, wParam, lParam );
+			// Get notify message handler
+			lpNmHdr = ( LPNMHDR )lParam;
+
+			// See if notify message is from rich edit window
+			if( IsRichEditWindow( lpNmHdr->hwndFrom ) )
+			{
+				// Notify message is from rich edit window
+
+				// Handle notify message from rich edit window
+				if( !( RichEditWindowHandleNotifyMessage( wParam, lParam, &RichEditWindowSelectionChangeFunction ) ) )
+				{
+					// Notify message was not handled from rich edit window
+
+					// Call default procedure
+					lr = DefWindowProc( hWndMain, uMessage, wParam, lParam );
+
+				} // End of notify message was not handled from rich edit window
+
+			} // End of notify message is from rich edit window
+			else
+			{
+				// Notify message is not from rich edit window
+
+				// Call default procedure
+				lr = DefWindowProc( hWndMain, uMessage, wParam, lParam );
+
+			} // End of notify message is not from rich edit window
 
 			// Break out of switch
 			break;

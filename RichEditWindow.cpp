@@ -200,6 +200,9 @@ BOOL RichEditWindowCreate( HWND hWndParent, HINSTANCE hInstance )
 			// Set text mode
 			SendMessage( g_hWndRichEdit, EM_SETTEXTMODE, ( WPARAM )RICH_EDIT_WINDOW_TEXT_MODE, ( LPARAM )NULL );
 
+			// Set event mask
+			SendMessage( g_hWndRichEdit, EM_SETEVENTMASK, ( WPARAM )NULL, ( LPARAM )RICH_EDIT_WINDOW_EVENT_MASK );
+
 			// Update return value
 			bResult = TRUE;
 
@@ -250,19 +253,19 @@ BOOL RichEditWindowGetRect( LPRECT lpRect )
 
 } // End of function RichEditWindowGetRect
 
-BOOL RichEditWindowHandleCommandMessage( WPARAM wParam, LPARAM lParam, void( *lpChangeFunction )(), void( *lpSelectionChangeFunction )( CHARRANGE cr ) )
+BOOL RichEditWindowHandleCommandMessage( WPARAM wParam, LPARAM, void( *lpUpdateFunction )() )
 {
 	BOOL bResult = FALSE;
 
-	// Select rich edit window notification code
+	// Select command notification code
 	switch( HIWORD( wParam ) )
 	{
-		case EN_CHANGE:
+		case EN_UPDATE:
 		{
-			// An edit window change function
+			// An edit window update notification code
 
-			// Call change function
-			( *lpChangeFunction )();
+			// Call update function
+			( *lpUpdateFunction )();
 
 			// Update return value
 			bResult = TRUE;
@@ -270,37 +273,56 @@ BOOL RichEditWindowHandleCommandMessage( WPARAM wParam, LPARAM lParam, void( *lp
 			// Break out of switch
 			break;
 
-		} // End of an edit window change function
-		case EN_SELCHANGE:
-		{
-			// An edit window selection change function
+		} // End of an edit window update notification code
 
-			// Call selection change function
-			( *lpSelectionChangeFunction )( ( ( SELCHANGE * )lParam )->chrg );
-
-			// Update return value
-			bResult = TRUE;
-
-			// Break out of switch
-			break;
-
-		} // End of an edit window selection change function
-		default:
-		{
-			// Default notification code
-
-			// No need to do anything here, just continue with default result
-
-			// Break out of switch
-			break;
-
-		} // End of default notification code
-
-	}; // End of selection for rich edit window notification code
+	} // End of selection for command notification code
 
 	return bResult;
 
 } // End of function RichEditWindowHandleCommandMessage
+
+BOOL RichEditWindowHandleNotifyMessage( WPARAM, LPARAM lParam, void( *lpSelectionChangeFunction )( int nLength ) )
+{
+	BOOL bResult = FALSE;
+
+	LPNMHDR lpNmHdr;
+
+	// Store notify message handler
+	lpNmHdr = ( LPNMHDR )lParam;
+
+	// Select notify message
+	switch( lpNmHdr->code )
+	{
+		case EN_SELCHANGE:
+		{
+			// An edit selection change notification message
+			//
+			// Note that for this to work, the rich edit window event mask must include ENM_SELCHANGE
+			SELCHANGE *lpSelChange;
+			int nSelectionLength;
+
+			// Get selection change item
+			lpSelChange = ( SELCHANGE * )lParam;
+
+			// Calculate selection length
+			nSelectionLength = ( lpSelChange->chrg.cpMax - lpSelChange->chrg.cpMin );
+
+			// Call selection change function
+			( *lpSelectionChangeFunction )( nSelectionLength );
+
+			// Update return value
+			bResult = TRUE;
+
+			// Break out of switch
+			break;
+
+		} // End of an edit selection change notification message
+
+	}; // End of selection for notify message
+
+	return bResult;
+
+} // End of function RichEditWindowHandleNotifyMessage
 
 BOOL RichEditWindowIsTextSelected()
 {

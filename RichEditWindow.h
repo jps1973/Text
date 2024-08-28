@@ -17,6 +17,8 @@
 
 #define RICH_EDIT_WINDOW_TEXT_MODE												( TM_PLAINTEXT | TM_MULTILEVELUNDO | TM_MULTICODEPAGE )
 
+#define RICH_EDIT_WINDOW_EVENT_MASK												( ENM_SELCHANGE | ENM_UPDATE )
+
 #define RICH_EDIT_LIBRARY_NAME													"Riched32.dll"
 
 #define RICH_EDIT_WINDOW_SUCCESSFULLY_CUT_TEXT_STATUS_MESSAGE					"Cut text to clipboard"
@@ -52,7 +54,9 @@ BOOL RichEditWindowDelete();
 
 BOOL RichEditWindowGetRect( LPRECT lpRect );
 
-BOOL RichEditWindowHandleCommandMessage( WPARAM wParam, LPARAM lParam, void( *lpChangeFunction )(), void( *lpSelectionChangeFunction )( CHARRANGE cr ) );
+BOOL RichEditWindowHandleCommandMessage( WPARAM wParam, LPARAM lParam, void( *lpUpdateFunction )() );
+
+BOOL RichEditWindowHandleNotifyMessage( WPARAM wParam, LPARAM lParam, void( *lpSelectionChangeFunction )( int nLength ) );
 
 BOOL RichEditWindowIsTextSelected();
 
