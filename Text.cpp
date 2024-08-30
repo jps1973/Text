@@ -92,6 +92,8 @@ LRESULT CALLBACK MainWndProc( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARA
 {
 	LRESULT lr = 0;
 
+	static HWND s_hWndNextClipboardViewer;
+
 	// Select message
 	switch( uMessage )
 	{
@@ -130,6 +132,9 @@ LRESULT CALLBACK MainWndProc( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARA
 
 						// Set status bar window font
 						StatusBarWindowSetFont( hFont );
+
+						// Add window to clipboard viewer chain
+						s_hWndNextClipboardViewer = SetClipboardViewer( hWndMain );
 
 					} // End of successfully created status bar window
 
@@ -558,9 +563,52 @@ LRESULT CALLBACK MainWndProc( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARA
 			break;
 
 		} // End of a close message
+		case WM_DRAWCLIPBOARD:
+		{
+			// A draw clipboard message
+
+			// Update paste button based on clipboard
+			ToolBarWindowEnableButton( IDM_EDIT_PASTE, RichEditWindowCanPaste() );
+
+			// Send message to next clipboard viewer window in chain
+			SendMessage( s_hWndNextClipboardViewer, uMessage, wParam, lParam );
+
+			// Break out of switch
+			break;
+
+		} // End of a draw clipboard message
+		case WM_CHANGECBCHAIN:
+		{
+			// A change clipboard chain message
+
+			// See if next clipboard viewer window is closing
+			if( ( HWND )wParam == s_hWndNextClipboardViewer )
+			{
+				// Next clipboard viewer window is closing
+
+				// Repair the chain
+				s_hWndNextClipboardViewer = ( HWND )lParam;
+
+			} // End of next clipboard viewer window is closing
+			else if( s_hWndNextClipboardViewer != NULL )
+			{
+				// Next clipboard viewer window is valid
+
+				// Send message to next clipboard viewer window
+				SendMessage( s_hWndNextClipboardViewer, uMessage, wParam, lParam );
+
+			} // End of next clipboard viewer window is valid
+
+			// Break out of switch
+			break;
+
+		} // End of a change clipboard chain message
 		case WM_DESTROY:
 		{
 			// A destroy message
+
+			// Remove window from clipboard viewer chain
+			ChangeClipboardChain( hWndMain, s_hWndNextClipboardViewer );
 
 			// Terminate thread
 			PostQuitMessage( 0 );
