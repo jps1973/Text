@@ -1,1 +1,9 @@
+C:\Users\jimps\Box\Documents\Code\Text\Resource.o
+C:\Users\jimps\Box\Documents\Code\Text\Resource.rc
+C:\Users\jimps\Box\Documents\Code\Text\RichEditWindow.cpp
+C:\Users\jimps\Box\Documents\Code\Text\RichEditWindow.h
+C:\Users\jimps\Box\Documents\Code\Text\StatusBarWindow.cpp
+C:\Users\jimps\Box\Documents\Code\Text\StatusBarWindow.h
+C:\Users\jimps\Box\Documents\Code\Text\Text.cpp
+C:\Users\jimps\Box\Documents\Code\Text\Text.exe
 gggggggggggggmmmgggggggggggggmmmgmmmggmmmggmmmg

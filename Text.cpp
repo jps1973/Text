@@ -219,9 +219,15 @@ LRESULT CALLBACK MainWndProc( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARA
 			HDROP hDrop;
 			UINT uWhichFile;
 			UINT uFileSize;
+			DWORD dwBufferLength = sizeof( char );
+			LPTSTR lpszTemp;
 
 			// Allocate string memory
-			LPTSTR lpszFilePath = new char[ STRING_LENGTH ];
+			LPTSTR lpszFilePath	= new char[ STRING_LENGTH ];
+			LPTSTR lpszBuffer	= new char[ dwBufferLength ];
+
+			// Clear buffer
+			lpszBuffer[ 0 ] = ( char )NULL;
 
 			// Get drop handle
 			hDrop = ( HDROP )wParam;
@@ -245,8 +251,29 @@ LRESULT CALLBACK MainWndProc( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARA
 					{
 						// Successfully got file path
 
-						// Display file path
-						MessageBox( hWndMain, lpszFilePath, INFORMATION_MESSAGE_CAPTION, ( MB_OK | MB_ICONINFORMATION ) );
+						// Allocate string memory
+						lpszTemp = new char[ dwBufferLength ];
+
+						// Copy buffer into temp
+						lstrcpy( lpszTemp, lpszBuffer );
+
+						// Free string memory
+						delete [] lpszBuffer;
+
+						// Update buffer length
+						dwBufferLength += ( lstrlen( lpszFilePath ) + lstrlen( NEW_LINE_TEXT ) );
+
+						// Reallocate string memory
+						lpszBuffer = new char[ dwBufferLength ];
+
+						// Copy temp back into buffer
+						lstrcpy( lpszBuffer, lpszTemp );
+
+						// Append file path onto buffer
+						lstrcat( lpszBuffer, lpszFilePath );
+
+						// Append new line onto buffer
+						lstrcat( lpszBuffer, NEW_LINE_TEXT );
 
 					} // End of successfully got file path
 
@@ -254,8 +281,12 @@ LRESULT CALLBACK MainWndProc( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARA
 
 			}; // End of loop through dropped files
 
+			// Replace selection with buffer
+			RichEditWindowReplaceSelection( lpszBuffer );
+
 			// Free string memory
 			delete [] lpszFilePath;
+			delete [] lpszBuffer;
 
 			// Break out of switch
 			break;

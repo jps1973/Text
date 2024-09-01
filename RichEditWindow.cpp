@@ -190,7 +190,7 @@ BOOL RichEditWindowCreate( HWND hWndParent, HINSTANCE hInstance )
 		// Successfully loaded rich edit library
 
 		// Create rich edit window
-		g_hWndRichEdit = ::CreateWindowEx( RICH_EDIT_WINDOW_EXTENDED_STYLE, RICH_EDIT_WINDOW_CLASS_NAME, RICH_EDIT_WINDOW_TEXT, RICH_EDIT_WINDOW_STYLE, 0, 0, 0, 0, hWndParent, ( HMENU )NULL, hInstance, NULL );
+		g_hWndRichEdit = CreateWindowEx( RICH_EDIT_WINDOW_EXTENDED_STYLE, RICH_EDIT_WINDOW_CLASS_NAME, RICH_EDIT_WINDOW_TEXT, RICH_EDIT_WINDOW_STYLE, 0, 0, 0, 0, hWndParent, ( HMENU )NULL, hInstance, NULL );
 
 		// Ensure that rich edit window was created
 		if( g_hWndRichEdit )
@@ -242,14 +242,14 @@ BOOL RichEditWindowCut()
 BOOL RichEditWindowDelete()
 {
 	// Delete rich edit window text
-	return ::SendMessage( g_hWndRichEdit, EM_REPLACESEL, ( WPARAM )TRUE, ( LPARAM )NULL );
+	return SendMessage( g_hWndRichEdit, EM_REPLACESEL, ( WPARAM )TRUE, ( LPARAM )NULL );
 
 } // End of function RichEditWindowDelete
 
 BOOL RichEditWindowGetRect( LPRECT lpRect )
 {
 	// Get rich edit window rect
-	return ::GetWindowRect( g_hWndRichEdit, lpRect );
+	return GetWindowRect( g_hWndRichEdit, lpRect );
 
 } // End of function RichEditWindowGetRect
 
@@ -415,7 +415,7 @@ BOOL RichEditWindowLoadText( LPCTSTR lpszFileName )
 BOOL RichEditWindowMove( int nX, int nY, int nWidth, int nHeight, BOOL bRepaint )
 {
 	// Move rich edit window
-	return ::MoveWindow( g_hWndRichEdit, nX, nY, nWidth, nHeight, bRepaint );
+	return MoveWindow( g_hWndRichEdit, nX, nY, nWidth, nHeight, bRepaint );
 
 } // End of function RichEditWindowMove
 
@@ -449,7 +449,7 @@ BOOL RichEditWindowPaste()
 				// Successfully got clipboard text
 
 				// Replace current selection with clipboard text
-				::SendMessage( g_hWndRichEdit, EM_REPLACESEL, ( WPARAM )TRUE, ( LPARAM )lpszClipboard );
+				SendMessage( g_hWndRichEdit, EM_REPLACESEL, ( WPARAM )TRUE, ( LPARAM )lpszClipboard );
 
 				// Update return value
 				bResult = TRUE;
@@ -494,9 +494,16 @@ BOOL RichEditWindowPaste()
 BOOL RichEditWindowRedo()
 {
 	// Redo
-	return ::SendMessage( g_hWndRichEdit, EM_REDO, ( WPARAM )NULL, ( LPARAM )NULL );
+	return SendMessage( g_hWndRichEdit, EM_REDO, ( WPARAM )NULL, ( LPARAM )NULL );
 
 } // End of function RichEditWindowRedo
+
+void RichEditWindowReplaceSelection( LPCTSTR lpszReplacementText )
+{
+	// Replace selected text
+	SendMessage( g_hWndRichEdit, EM_REPLACESEL, ( WPARAM )TRUE, ( LPARAM )lpszReplacementText );
+
+} // End of function RichEditWindowReplaceSelection
 
 BOOL RichEditWindowSaveText( LPCTSTR lpszFileName )
 {
@@ -563,27 +570,27 @@ BOOL RichEditWindowSaveText( LPCTSTR lpszFileName )
 void RichEditWindowSelect( int nStart, int nEnd )
 {
 	// Select rich edit window text
-	::SendMessage( g_hWndRichEdit, EM_SETSEL, ( WPARAM )nStart, ( LPARAM )nEnd );
+	SendMessage( g_hWndRichEdit, EM_SETSEL, ( WPARAM )nStart, ( LPARAM )nEnd );
 
 } // End of function RichEditWindowSelect
 
 HWND RichEditWindowSetFocus()
 {
 	// Focus on rich edit window
-	return ::SetFocus( g_hWndRichEdit );
+	return SetFocus( g_hWndRichEdit );
 
 } // End of function RichEditWindowSetFocus
 
 void RichEditWindowSetFont( HFONT hFont )
 {
 	// Set rich edit window font
-	::SendMessage( g_hWndRichEdit, WM_SETFONT, ( WPARAM )hFont, ( LPARAM )TRUE );
+	SendMessage( g_hWndRichEdit, WM_SETFONT, ( WPARAM )hFont, ( LPARAM )TRUE );
 
 } // End of function RichEditWindowSetFont
 
 BOOL RichEditWindowUndo()
 {
 	// Undo
-	return ::SendMessage( g_hWndRichEdit, EM_UNDO, ( WPARAM )NULL, ( LPARAM )NULL );
+	return SendMessage( g_hWndRichEdit, EM_UNDO, ( WPARAM )NULL, ( LPARAM )NULL );
 
 } // End of function RichEditWindowUndo

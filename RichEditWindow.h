@@ -68,6 +68,8 @@ BOOL RichEditWindowPaste();
 
 BOOL RichEditWindowRedo();
 
+void RichEditWindowReplaceSelection( LPCTSTR lpszReplacementText );
+
 BOOL RichEditWindowSaveText( LPCTSTR lpszFileName );
 
 void RichEditWindowSelect( int nStart = 0, int nEnd = -1 );

@@ -26,7 +26,7 @@ BOOL ToolBarWindowCreate( HWND hWndParent, HINSTANCE hInstance )
 	BOOL bResult = FALSE;
 
 	// Create toolbar window
-	g_hWndToolBar = ::CreateWindowEx( TOOL_BAR_WINDOW_EXTENDED_STYLE, TOOL_BAR_WINDOW_CLASS_NAME, TOOL_BAR_WINDOW_TEXT, TOOL_BAR_WINDOW_STYLE, 0, 0, 0, 0, hWndParent, ( HMENU )NULL, hInstance, NULL );
+	g_hWndToolBar = CreateWindowEx( TOOL_BAR_WINDOW_EXTENDED_STYLE, TOOL_BAR_WINDOW_CLASS_NAME, TOOL_BAR_WINDOW_TEXT, TOOL_BAR_WINDOW_STYLE, 0, 0, 0, 0, hWndParent, ( HMENU )NULL, hInstance, NULL );
 
 	// Ensure that toolbar window was created
 	if( g_hWndToolBar )
@@ -76,14 +76,14 @@ BOOL ToolBarWindowCreate( HWND hWndParent, HINSTANCE hInstance )
 BOOL ToolBarWindowEnableButton( int nCommandID, BOOL bEnable )
 {
 	// Enable toolbar window button
-	return ::SendMessage( g_hWndToolBar, TB_ENABLEBUTTON, ( WPARAM )nCommandID, ( LPARAM )bEnable );
+	return SendMessage( g_hWndToolBar, TB_ENABLEBUTTON, ( WPARAM )nCommandID, ( LPARAM )bEnable );
 
 } // End of function ToolBarWindowEnableButton
 
 BOOL ToolBarWindowGetRect( LPRECT lpRect )
 {
 	// Get toolbar window rect
-	return ::GetWindowRect( g_hWndToolBar, lpRect );
+	return GetWindowRect( g_hWndToolBar, lpRect );
 
 } // End of function ToolBarWindowGetRect
 
@@ -103,20 +103,20 @@ void ToolBarWindowInitButton( int nWhichButton, int nImage, int nCommandID )
 BOOL ToolBarWindowMove( int nX, int nY, int nWidth, int nHeight, BOOL bRepaint )
 {
 	// Move toolbar window
-	return ::MoveWindow( g_hWndToolBar, nX, nY, nWidth, nHeight, bRepaint );
+	return MoveWindow( g_hWndToolBar, nX, nY, nWidth, nHeight, bRepaint );
 
 } // End of function ToolBarWindowMove
 
 HWND ToolBarWindowSetFocus()
 {
 	// Focus on toolbar window
-	return ::SetFocus( g_hWndToolBar );
+	return SetFocus( g_hWndToolBar );
 
 } // End of function ToolBarWindowSetFocus
 
 void ToolBarWindowSetFont( HFONT hFont )
 {
 	// Set toolbar window font
-	::SendMessage( g_hWndToolBar, WM_SETFONT, ( WPARAM )hFont, ( LPARAM )TRUE );
+	SendMessage( g_hWndToolBar, WM_SETFONT, ( WPARAM )hFont, ( LPARAM )TRUE );
 
 } // End of function ToolBarWindowSetFont
