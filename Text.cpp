@@ -344,9 +344,19 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE,  LPSTR, int nCmdShow )
 		{
 			// Successfully registered main window class
 			HWND hWndMain;
+			DWORD dwLeft;
+			DWORD dwTop;
+			DWORD dwWidth;
+			DWORD dwHeight;
+
+			// Get initial window size and position values
+			dwLeft		= RegistryGetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY, REGISTRY_LEFT_VALUE_NAME );
+			dwTop		= RegistryGetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY, REGISTRY_TOP_VALUE_NAME );
+			dwWidth		= RegistryGetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY, REGISTRY_WIDTH_VALUE_NAME );
+			dwHeight	= RegistryGetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY, REGISTRY_HEIGHT_VALUE_NAME );
 
 			// Create main window
-			hWndMain = CreateWindowEx( MAIN_WINDOW_EXTENDED_STYLE, MAIN_WINDOW_CLASS_NAME, MAIN_WINDOW_TEXT, MAIN_WINDOW_STYLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL );
+			hWndMain = CreateWindowEx( MAIN_WINDOW_EXTENDED_STYLE, MAIN_WINDOW_CLASS_NAME, MAIN_WINDOW_TEXT, MAIN_WINDOW_STYLE, dwLeft, dwTop, dwWidth, dwHeight, NULL, NULL, hInstance, NULL );
 
 			// Ensure that main window was created
 			if( hWndMain )

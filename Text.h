@@ -8,6 +8,8 @@
 #include "Common.h"
 #include "Resource.h"
 
+#include "Registry.h"
+
 #include "ListBoxWindow.h"
 #include "StatusBarWindow.h"
 
@@ -30,6 +32,13 @@
 #define SYSTEM_MENU_SEPARATOR_ITEM_POSITION										5
 #define SYSTEM_MENU_ABOUT_ITEM_POSITION											6
 #define SYSTEM_MENU_ABOUT_ITEM_TEXT												"About"
+
+#define REGISTRY_TOP_LEVEL_KEY													HKEY_CURRENT_USER
+#define REGISTRY_SUB_KEY														"SOFTWARE\\Jim Smith\\Text"
+#define REGISTRY_LEFT_VALUE_NAME												"Left"
+#define REGISTRY_TOP_VALUE_NAME													"Top"
+#define REGISTRY_WIDTH_VALUE_NAME												"Width"
+#define REGISTRY_HEIGHT_VALUE_NAME												"Height"
 
 #define ABOUT_MESSAGE_TEXT														"Text\r\n"							\
 																				"\r\n"								\
