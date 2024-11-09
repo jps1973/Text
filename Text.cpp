@@ -1,6 +1,6 @@
-// Template.cpp
+// Text.cpp
 
-#include "Template.h"
+#include "Text.h"
 
 void ListBoxWindowDoubleClickFunction( LPCTSTR lpszItemText )
 {
@@ -298,106 +298,125 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 
 } // End of function MainWindowProcedure
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,  LPSTR, int nCmdShow )
+int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE,  LPSTR, int nCmdShow )
 {
 	MSG msg;
 
-	WNDCLASSEX wcMain;
+	HWND hWndRunning;
 
 	// Clear message structure
 	ZeroMemory( &msg, sizeof( msg ) );
 
-	// Clear main window class structure
-	ZeroMemory( &wcMain, sizeof( wcMain ) );
+	// Attempt to find running window
+	hWndRunning = FindWindow( MAIN_WINDOW_CLASS_NAME, MAIN_WINDOW_TEXT );
 
-	// Initialise main window class structure
-	wcMain.cbSize			= sizeof( WNDCLASSEX );
-	wcMain.style			= MAIN_WINDOW_CLASS_STYLE;
-	wcMain.lpfnWndProc		= MainWindowProcedure;
-	wcMain.hInstance		= hInstance;
-	wcMain.hIcon			= MAIN_WINDOW_CLASS_ICON;
-	wcMain.hCursor			= MAIN_WINDOW_CLASS_CURSOR;
-	wcMain.hbrBackground	= MAIN_WINDOW_CLASS_BACKGROUND;
-	wcMain.lpszMenuName		= MAIN_WINDOW_CLASS_MENU_NAME;
-	wcMain.lpszClassName	= MAIN_WINDOW_CLASS_NAME;
-	wcMain.hIconSm			= MAIN_WINDOW_CLASS_ICON;
-
-	// Register main window class
-	if( RegisterClassEx( &wcMain ) )
+	// See if running window was found
+	if( hWndRunning )
 	{
-		// Successfully registered main window class
-		HWND hWndMain;
-
-		// Create main window
-		hWndMain = CreateWindowEx( MAIN_WINDOW_EXTENDED_STYLE, MAIN_WINDOW_CLASS_NAME, MAIN_WINDOW_TEXT, MAIN_WINDOW_STYLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL );
-
-		// Ensure that main window was created
-		if( hWndMain )
-		{
-			// Successfully created main window
-			HMENU hMenuSystem;
-			int nItemCount;
-
-			// Allocate string memory
-			LPTSTR lpszStatusMessage = new char[ STRING_LENGTH ];
-
-			// Get system menu
-			hMenuSystem = GetSystemMenu( hWndMain, FALSE );
-
-			// Add separator to system menu
-			InsertMenu( hMenuSystem, SYSTEM_MENU_SEPARATOR_ITEM_POSITION, ( MF_BYPOSITION | MF_SEPARATOR ), 0, NULL );
-
-			// Add about item to system menu
-			InsertMenu( hMenuSystem, SYSTEM_MENU_ABOUT_ITEM_POSITION, MF_BYPOSITION, IDM_HELP_ABOUT, SYSTEM_MENU_ABOUT_ITEM_TEXT );
-
-			// Show main window
-			ShowWindow( hWndMain, nCmdShow );
-
-			// Update main window
-			UpdateWindow( hWndMain );
-
-			// Populate list box window
-			nItemCount = ListBoxWindowPopulate();
-
-			// Format status message
-			wsprintf( lpszStatusMessage, LIST_BOX_WINDOW_POPULATE_STATUS_MESSAGE_FORMAT_STRING, nItemCount );
-
-			// Show status message on status bar window
-			StatusBarWindowSetText( lpszStatusMessage );
-
-			// Main message loop
-			while( GetMessage( &msg, NULL, 0, 0 ) > 0 )
-			{
-				// Translate message
-				TranslateMessage( &msg );
-
-				// Dispatch message
-				DispatchMessage( &msg );
-
-			}; // End of main message loop
-
-			// Free string memory
-			delete [] lpszStatusMessage;
-
-		} // End of successfully created main window
-		else
-		{
-			// Unable to create main window
-
-			// Display error message
-			MessageBox( NULL, UNABLE_TO_CREATE_MAIN_WINDOW_ERROR_MESSAGE, ERROR_MESSAGE_CAPTION, ( MB_OK | MB_ICONERROR ) );
-
-		} // End of unable to create main window
-
-	} // End of successfully registered main window class
+		// Successfully found running window
+		
+		// Set running window as foreground window
+		SetForegroundWindow( hWndRunning );
+		
+	} // End of successfully found running window
 	else
 	{
-		// Unable to register main window class
+		// Unable to find running window
+		WNDCLASSEX wcMain;
 
-		// Display error message
-		MessageBox( NULL, UNABLE_TO_REGISTER_MAIN_WINDOW_CLASS_ERROR_MESSAGE, ERROR_MESSAGE_CAPTION, ( MB_OK | MB_ICONERROR ) );
+		// Clear main window class structure
+		ZeroMemory( &wcMain, sizeof( wcMain ) );
 
-	} // End of unable to register main window class
+		// Initialise main window class structure
+		wcMain.cbSize			= sizeof( WNDCLASSEX );
+		wcMain.style			= MAIN_WINDOW_CLASS_STYLE;
+		wcMain.lpfnWndProc		= MainWindowProcedure;
+		wcMain.hInstance		= hInstance;
+		wcMain.hIcon			= MAIN_WINDOW_CLASS_ICON;
+		wcMain.hCursor			= MAIN_WINDOW_CLASS_CURSOR;
+		wcMain.hbrBackground	= MAIN_WINDOW_CLASS_BACKGROUND;
+		wcMain.lpszMenuName		= MAIN_WINDOW_CLASS_MENU_NAME;
+		wcMain.lpszClassName	= MAIN_WINDOW_CLASS_NAME;
+		wcMain.hIconSm			= MAIN_WINDOW_CLASS_ICON;
+
+		// Register main window class
+		if( RegisterClassEx( &wcMain ) )
+		{
+			// Successfully registered main window class
+			HWND hWndMain;
+
+			// Create main window
+			hWndMain = CreateWindowEx( MAIN_WINDOW_EXTENDED_STYLE, MAIN_WINDOW_CLASS_NAME, MAIN_WINDOW_TEXT, MAIN_WINDOW_STYLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL );
+
+			// Ensure that main window was created
+			if( hWndMain )
+			{
+				// Successfully created main window
+				HMENU hMenuSystem;
+				int nItemCount;
+
+				// Allocate string memory
+				LPTSTR lpszStatusMessage = new char[ STRING_LENGTH ];
+
+				// Get system menu
+				hMenuSystem = GetSystemMenu( hWndMain, FALSE );
+
+				// Add separator to system menu
+				InsertMenu( hMenuSystem, SYSTEM_MENU_SEPARATOR_ITEM_POSITION, ( MF_BYPOSITION | MF_SEPARATOR ), 0, NULL );
+
+				// Add about item to system menu
+				InsertMenu( hMenuSystem, SYSTEM_MENU_ABOUT_ITEM_POSITION, MF_BYPOSITION, IDM_HELP_ABOUT, SYSTEM_MENU_ABOUT_ITEM_TEXT );
+
+				// Show main window
+				ShowWindow( hWndMain, nCmdShow );
+
+				// Update main window
+				UpdateWindow( hWndMain );
+
+				// Populate list box window
+				nItemCount = ListBoxWindowPopulate();
+
+				// Format status message
+				wsprintf( lpszStatusMessage, LIST_BOX_WINDOW_POPULATE_STATUS_MESSAGE_FORMAT_STRING, nItemCount );
+
+				// Show status message on status bar window
+				StatusBarWindowSetText( lpszStatusMessage );
+
+				// Main message loop
+				while( GetMessage( &msg, NULL, 0, 0 ) > 0 )
+				{
+					// Translate message
+					TranslateMessage( &msg );
+
+					// Dispatch message
+					DispatchMessage( &msg );
+
+				}; // End of main message loop
+
+				// Free string memory
+				delete [] lpszStatusMessage;
+
+			} // End of successfully created main window
+			else
+			{
+				// Unable to create main window
+
+				// Display error message
+				MessageBox( NULL, UNABLE_TO_CREATE_MAIN_WINDOW_ERROR_MESSAGE, ERROR_MESSAGE_CAPTION, ( MB_OK | MB_ICONERROR ) );
+
+			} // End of unable to create main window
+
+		} // End of successfully registered main window class
+		else
+		{
+			// Unable to register main window class
+
+			// Display error message
+			MessageBox( NULL, UNABLE_TO_REGISTER_MAIN_WINDOW_CLASS_ERROR_MESSAGE, ERROR_MESSAGE_CAPTION, ( MB_OK | MB_ICONERROR ) );
+
+		} // End of unable to register main window class
+
+	} // End of unable to find running window
 
 	return msg.wParam;
 
