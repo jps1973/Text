@@ -110,10 +110,24 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 			// Move control windows
 			ListBoxWindowMove( 0, 0, nClientWidth, nListBoxWindowHeight, TRUE );
 
+			// Save window position on registry
+			RegistrySaveWindowPosition( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY, hWndMain );
+
 			// Break out of switch
 			break;
 
 		} // End of a size message
+		case WM_MOVE:
+		{
+			// A move message
+
+			// Save window position on registry
+			RegistrySaveWindowPosition( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY, hWndMain );
+
+			// Break out of switch
+			break;
+
+		} // End of a move message
 		case WM_ACTIVATE:
 		{
 			// An activate message
@@ -350,10 +364,10 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE,  LPSTR, int nCmdShow )
 			DWORD dwHeight;
 
 			// Get initial window size and position values
-			dwLeft		= RegistryGetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY, REGISTRY_LEFT_VALUE_NAME );
-			dwTop		= RegistryGetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY, REGISTRY_TOP_VALUE_NAME );
-			dwWidth		= RegistryGetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY, REGISTRY_WIDTH_VALUE_NAME );
-			dwHeight	= RegistryGetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY, REGISTRY_HEIGHT_VALUE_NAME );
+			dwLeft		= RegistryGetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY, REGISTRY_LEFT_VALUE_NAME,		CW_USEDEFAULT );
+			dwTop		= RegistryGetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY, REGISTRY_TOP_VALUE_NAME,		CW_USEDEFAULT );
+			dwWidth		= RegistryGetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY, REGISTRY_WIDTH_VALUE_NAME,	CW_USEDEFAULT );
+			dwHeight	= RegistryGetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY, REGISTRY_HEIGHT_VALUE_NAME,	CW_USEDEFAULT );
 
 			// Create main window
 			hWndMain = CreateWindowEx( MAIN_WINDOW_EXTENDED_STYLE, MAIN_WINDOW_CLASS_NAME, MAIN_WINDOW_TEXT, MAIN_WINDOW_STYLE, dwLeft, dwTop, dwWidth, dwHeight, NULL, NULL, hInstance, NULL );
