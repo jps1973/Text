@@ -19,10 +19,22 @@ BOOL UpdatePasteButtons( HWND hWndMain )
 	{
 		// Clipboard contains text
 
+		// Enable paste main menu item
+		EnableMenuItem( hMenuMain, IDM_EDIT_PASTE, MF_ENABLED );
+
+		// Enable paste context menu item
+		EnableMenuItem( g_hMenuContext, IDM_EDIT_PASTE, MF_ENABLED );
+
 	} // End of clipboard contains text
 	else
 	{
 		// Clipboard does not contain text
+
+		// Disable paste main menu item
+		EnableMenuItem( hMenuMain, IDM_EDIT_PASTE, MF_GRAYED );
+
+		// Disable paste context menu item
+		EnableMenuItem( g_hMenuContext, IDM_EDIT_PASTE, MF_GRAYED );
 
 	} // End of clipboard does not contain text
 
@@ -42,10 +54,22 @@ void RichEditWindowUpdateFunction( HWND hWndMain, BOOL bCanUndo, BOOL bCanRedo )
 	{
 		// Undo is possible
 
+		// Enable undo main menu item
+		EnableMenuItem( hMenuMain, IDM_EDIT_UNDO, MF_ENABLED );
+
+		// Enable undo context menu item
+		EnableMenuItem( g_hMenuContext, IDM_EDIT_UNDO, MF_ENABLED );
+
 	} // End of undo is possible
 	else
 	{
 		// Undo is not possible
+
+		// Disable undo main menu item
+		EnableMenuItem( hMenuMain, IDM_EDIT_UNDO, MF_GRAYED );
+
+		// Disable undo context menu item
+		EnableMenuItem( g_hMenuContext, IDM_EDIT_UNDO, MF_GRAYED );
 
 	} // End of undo is not possible
 
@@ -54,10 +78,22 @@ void RichEditWindowUpdateFunction( HWND hWndMain, BOOL bCanUndo, BOOL bCanRedo )
 	{
 		// Redo is possible
 
+		// Enable redo main menu item
+		EnableMenuItem( hMenuMain, IDM_EDIT_REDO, MF_ENABLED );
+
+		// Enable redo context menu item
+		EnableMenuItem( g_hMenuContext, IDM_EDIT_REDO, MF_ENABLED );
+
 	} // End of redo is possible
 	else
 	{
 		// Redo is not possible
+
+		// Disable redo main menu item
+		EnableMenuItem( hMenuMain, IDM_EDIT_REDO, MF_GRAYED );
+
+		// Disable redo context menu item
+		EnableMenuItem( g_hMenuContext, IDM_EDIT_REDO, MF_GRAYED );
 
 	} // End of redo is not possible
 
@@ -75,10 +111,30 @@ void RichEditWindowSelectionChangeFunction( HWND hWndMain, int nLengthOfSelectio
 	{
 		// Some text is selected
 
+		// Enable main menu items
+		EnableMenuItem( hMenuMain,		IDM_EDIT_CUT,		MF_ENABLED );
+		EnableMenuItem( hMenuMain,		IDM_EDIT_COPY,		MF_ENABLED );
+		EnableMenuItem( hMenuMain,		IDM_EDIT_DELETE,	MF_ENABLED );
+
+		// Enable context menu items
+		EnableMenuItem( g_hMenuContext,	IDM_EDIT_CUT,		MF_ENABLED );
+		EnableMenuItem( g_hMenuContext,	IDM_EDIT_COPY,		MF_ENABLED );
+		EnableMenuItem( g_hMenuContext,	IDM_EDIT_DELETE,	MF_ENABLED );
+
 	} // End of some text is selected
 	else
 	{
 		// No text is selected
+
+		// Disable main menu items
+		EnableMenuItem( hMenuMain,		IDM_EDIT_CUT,		MF_GRAYED );
+		EnableMenuItem( hMenuMain,		IDM_EDIT_COPY,		MF_GRAYED );
+		EnableMenuItem( hMenuMain,		IDM_EDIT_DELETE,	MF_GRAYED );
+
+		// Disable context menu items
+		EnableMenuItem( g_hMenuContext,	IDM_EDIT_CUT,		MF_GRAYED );
+		EnableMenuItem( g_hMenuContext,	IDM_EDIT_COPY,		MF_GRAYED );
+		EnableMenuItem( g_hMenuContext,	IDM_EDIT_DELETE,	MF_GRAYED );
 
 	} // End of no text is selected
 
@@ -131,7 +187,7 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 				HFONT hFont;
 
 				// Get rich edit window font
-				hFont = ( HFONT )GetStockObject( DEFAULT_GUI_FONT );
+				hFont = ( HFONT )GetStockObject( ANSI_FIXED_FONT );
 
 				// Set rich edit window font
 				RichEditWindowSetFont( hFont );
@@ -149,6 +205,9 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 
 					// Load context menu
 					g_hMenuContext = LoadMenu( NULL, MAKEINTRESOURCE( IDR_CONTEXT_MENU ) );
+
+					// Add main window as a clipboard listener
+					AddClipboardFormatListener( hWndMain );
 
 				} // End of successfully created status bar window
 
@@ -230,6 +289,83 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 					break;
 
 				} // End of a help about command
+				case IDM_EDIT_UNDO:
+				{
+					// An edit undo command
+
+					// Undo
+					RichEditWindowUndo();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit undo command
+				case IDM_EDIT_REDO:
+				{
+					// An edit redo command
+
+					// Redo
+					RichEditWindowRedo();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit redo command
+				case IDM_EDIT_CUT:
+				{
+					// An edit cut command
+
+					// Cut selected text
+					RichEditWindowCut();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit cut command
+				case IDM_EDIT_COPY:
+				{
+					// An edit copy command
+
+					// Copy selected text
+					RichEditWindowCopy();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit copy command
+				case IDM_EDIT_PASTE:
+				{
+					// An edit paste command
+
+					// Paste text
+					RichEditWindowPaste();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit paste command
+				case IDM_EDIT_DELETE:
+				{
+					// An edit delete command
+
+					// Delete selected text
+					RichEditWindowReplaceSelected( NULL, TRUE );
+
+					// Break out of switch
+					break;
+
+				} // End of an edit delete command
+				case IDM_EDIT_SELECT_ALL:
+				{
+					// An edit select all command
+
+					// Select all texe
+					RichEditWindowSelect();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit select all command
 				case IDM_FILE_EXIT:
 				{
 					// A file exit command
@@ -318,6 +454,17 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 			break;
 
 		} // End of a system command message
+		case WM_CLIPBOARDUPDATE:
+		{
+			// A clipboard update message
+
+			// Update paste buttons
+			UpdatePasteButtons( hWndMain );
+
+			// Break out of switch
+			break;
+
+		} // End of a clipboard update message
 		case WM_CONTEXTMENU:
 		{
 			// A context menu message
@@ -376,6 +523,9 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 		default:
 		{
 			// Default message
+
+			// Remove main window as a clipboard listener
+			RemoveClipboardFormatListener( hWndMain );
 
 			// Call default procedure
 			lr = DefWindowProc( hWndMain, uMessage, wParam, lParam );
