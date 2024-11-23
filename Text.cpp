@@ -5,6 +5,42 @@
 // Global variables
 static HMENU g_hMenuContext;
 
+BOOL RegistrySaveWindowPosition(  HWND hWnd )
+{
+	BOOL bResult = FALSE;
+	
+	RECT rcWindow;
+	
+	// Get window rect
+	if( GetWindowRect( hWnd, &rcWindow ) )
+	{
+		// Successfully got window rect
+		DWORD dwLeft;
+		DWORD dwTop;
+		DWORD dwWidth;
+		DWORD dwHeight;
+
+		// Calculate size and position values
+		dwLeft		= rcWindow.left;
+		dwTop		= rcWindow.top;
+		dwWidth		= ( rcWindow.right - rcWindow.left );
+		dwHeight	= ( rcWindow.bottom - rcWindow.top );
+
+		// Save values on registry
+		RegistrySetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY_PATH, REGISTRY_LEFT_VALUE_NAME,		dwLeft );
+		RegistrySetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY_PATH, REGISTRY_TOP_VALUE_NAME,		dwTop );
+		RegistrySetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY_PATH, REGISTRY_WIDTH_VALUE_NAME,		dwWidth );
+		RegistrySetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY_PATH, REGISTRY_HEIGHT_VALUE_NAME,	dwHeight );
+
+		// Update return value
+		bResult = TRUE;
+
+	} // End of successfully got window rect
+
+	return bResult;
+
+} // End of function RegistrySaveWindowPosition
+
 BOOL UpdatePasteButton( HWND hWndMain )
 {
 	BOOL bResult = FALSE;
@@ -287,10 +323,24 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 			// Move control windows
 			RichEditWindowMove( 0, nToolBarWindowHeight, nClientWidth, nRichEditWindowHeight, TRUE );
 
+			// Save main window position
+			RegistrySaveWindowPosition( hWndMain );
+
 			// Break out of switch
 			break;
 
 		} // End of a size message
+		case WM_MOVE:
+		{
+			// A move message
+
+			// Save main window position
+			RegistrySaveWindowPosition( hWndMain );
+
+			// Break out of switch
+			break;
+
+		} // End of a move message
 		case WM_ACTIVATE:
 		{
 			// An activate message
@@ -672,9 +722,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,  LPSTR, int nCmdShow )
 			{
 				// Successfully registered main window class
 				HWND hWndMain;
+				DWORD dwLeft;
+				DWORD dwTop;
+				DWORD dwWidth;
+				DWORD dwHeight;
+
+				// Get main window size and position values
+				dwLeft		= RegistryGetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY_PATH, REGISTRY_LEFT_VALUE_NAME,	CW_USEDEFAULT );
+				dwTop		= RegistryGetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY_PATH, REGISTRY_TOP_VALUE_NAME,		CW_USEDEFAULT );
+				dwWidth		= RegistryGetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY_PATH, REGISTRY_WIDTH_VALUE_NAME,	CW_USEDEFAULT );
+				dwHeight	= RegistryGetValue( REGISTRY_TOP_LEVEL_KEY, REGISTRY_SUB_KEY_PATH, REGISTRY_HEIGHT_VALUE_NAME,	CW_USEDEFAULT );
 
 				// Create main window
-				hWndMain = CreateWindowEx( MAIN_WINDOW_EXTENDED_STYLE, MAIN_WINDOW_CLASS_NAME, MAIN_WINDOW_TEXT, MAIN_WINDOW_STYLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL );
+				hWndMain = CreateWindowEx( MAIN_WINDOW_EXTENDED_STYLE, MAIN_WINDOW_CLASS_NAME, MAIN_WINDOW_TEXT, MAIN_WINDOW_STYLE, dwLeft, dwTop, dwWidth, dwHeight, NULL, NULL, hInstance, NULL );
 
 				// Ensure that main window was created
 				if( hWndMain )

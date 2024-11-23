@@ -11,6 +11,8 @@
 #include "Common.h"
 #include "Resource.h"
 
+#include "Registry.h"
+
 #include "RichEditWindow.h"
 #include "StatusBarWindow.h"
 #include "ToolBarWindow.h"
@@ -40,6 +42,13 @@
 																				"Written by Jim Smith\r\n"			\
 																				"\r\n"								\
 																				"November 2024"
+
+#define REGISTRY_TOP_LEVEL_KEY													HKEY_CURRENT_USER
+#define REGISTRY_SUB_KEY_PATH													"SOFTWARE\\Jim Smith\\Text"
+#define REGISTRY_LEFT_VALUE_NAME												"left"
+#define REGISTRY_TOP_VALUE_NAME													"top"
+#define REGISTRY_WIDTH_VALUE_NAME												"width"
+#define REGISTRY_HEIGHT_VALUE_NAME												"height"
 
 #define TEXT_FILE_NAME															"Text.txt"
 
