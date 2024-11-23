@@ -5,7 +5,7 @@
 // Global variables
 static HMENU g_hMenuContext;
 
-BOOL UpdatePasteButtons( HWND hWndMain )
+BOOL UpdatePasteButton( HWND hWndMain )
 {
 	BOOL bResult = FALSE;
 
@@ -25,6 +25,9 @@ BOOL UpdatePasteButtons( HWND hWndMain )
 		// Enable paste context menu item
 		EnableMenuItem( g_hMenuContext, IDM_EDIT_PASTE, MF_ENABLED );
 
+		// Enable paste button on tool bar window
+		ToolBarWindowEnableButton( IDM_EDIT_PASTE, TRUE );
+
 	} // End of clipboard contains text
 	else
 	{
@@ -36,11 +39,14 @@ BOOL UpdatePasteButtons( HWND hWndMain )
 		// Disable paste context menu item
 		EnableMenuItem( g_hMenuContext, IDM_EDIT_PASTE, MF_GRAYED );
 
+		// Disable paste button on tool bar window
+		ToolBarWindowEnableButton( IDM_EDIT_PASTE, FALSE );
+
 	} // End of clipboard does not contain text
 
 	return bResult;
 
-} // End of function UpdatePasteButtons
+} // End of function UpdatePasteButton
 
 void RichEditWindowUpdateFunction( HWND hWndMain, BOOL bCanUndo, BOOL bCanRedo )
 {
@@ -60,6 +66,9 @@ void RichEditWindowUpdateFunction( HWND hWndMain, BOOL bCanUndo, BOOL bCanRedo )
 		// Enable undo context menu item
 		EnableMenuItem( g_hMenuContext, IDM_EDIT_UNDO, MF_ENABLED );
 
+		// Enable undo button on tool bar window
+		ToolBarWindowEnableButton( IDM_EDIT_UNDO, TRUE );
+
 	} // End of undo is possible
 	else
 	{
@@ -70,6 +79,9 @@ void RichEditWindowUpdateFunction( HWND hWndMain, BOOL bCanUndo, BOOL bCanRedo )
 
 		// Disable undo context menu item
 		EnableMenuItem( g_hMenuContext, IDM_EDIT_UNDO, MF_GRAYED );
+
+		// Disable undo button on tool bar window
+		ToolBarWindowEnableButton( IDM_EDIT_UNDO, FALSE );
 
 	} // End of undo is not possible
 
@@ -84,6 +96,9 @@ void RichEditWindowUpdateFunction( HWND hWndMain, BOOL bCanUndo, BOOL bCanRedo )
 		// Enable redo context menu item
 		EnableMenuItem( g_hMenuContext, IDM_EDIT_REDO, MF_ENABLED );
 
+		// Enable redo button on tool bar window
+		ToolBarWindowEnableButton( IDM_EDIT_REDO, TRUE );
+
 	} // End of redo is possible
 	else
 	{
@@ -94,6 +109,9 @@ void RichEditWindowUpdateFunction( HWND hWndMain, BOOL bCanUndo, BOOL bCanRedo )
 
 		// Disable redo context menu item
 		EnableMenuItem( g_hMenuContext, IDM_EDIT_REDO, MF_GRAYED );
+
+		// Disable redo button on tool bar window
+		ToolBarWindowEnableButton( IDM_EDIT_REDO, FALSE );
 
 	} // End of redo is not possible
 
@@ -121,6 +139,11 @@ void RichEditWindowSelectionChangeFunction( HWND hWndMain, int nLengthOfSelectio
 		EnableMenuItem( g_hMenuContext,	IDM_EDIT_COPY,		MF_ENABLED );
 		EnableMenuItem( g_hMenuContext,	IDM_EDIT_DELETE,	MF_ENABLED );
 
+		// Enable tool bar window buttons
+		ToolBarWindowEnableButton( IDM_EDIT_CUT,			TRUE );
+		ToolBarWindowEnableButton( IDM_EDIT_COPY,			TRUE );
+		ToolBarWindowEnableButton( IDM_EDIT_DELETE,			TRUE );
+
 	} // End of some text is selected
 	else
 	{
@@ -135,6 +158,11 @@ void RichEditWindowSelectionChangeFunction( HWND hWndMain, int nLengthOfSelectio
 		EnableMenuItem( g_hMenuContext,	IDM_EDIT_CUT,		MF_GRAYED );
 		EnableMenuItem( g_hMenuContext,	IDM_EDIT_COPY,		MF_GRAYED );
 		EnableMenuItem( g_hMenuContext,	IDM_EDIT_DELETE,	MF_GRAYED );
+
+		// Disable tool bar window buttons
+		ToolBarWindowEnableButton( IDM_EDIT_CUT,			FALSE );
+		ToolBarWindowEnableButton( IDM_EDIT_COPY,			FALSE );
+		ToolBarWindowEnableButton( IDM_EDIT_DELETE,			FALSE );
 
 	} // End of no text is selected
 
@@ -180,38 +208,45 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 			// Get instance
 			hInstance = GetModuleHandle( NULL );
 
-			// Create rich edit window
-			if( RichEditWindowCreate( hWndMain, hInstance ) )
+			// Create tool bar window
+			if( ToolBarWindowCreate( hWndMain, hInstance ) )
 			{
-				// Successfully created rich edit window
-				HFONT hFont;
+				// Successfully created tool bar window
 
-				// Get rich edit window font
-				hFont = ( HFONT )GetStockObject( ANSI_FIXED_FONT );
-
-				// Set rich edit window font
-				RichEditWindowSetFont( hFont );
-
-				// Create status bar window
-				if( StatusBarWindowCreate( hWndMain, hInstance ) )
+				// Create rich edit window
+				if( RichEditWindowCreate( hWndMain, hInstance ) )
 				{
-					// Successfully created status bar window
+					// Successfully created rich edit window
+					HFONT hFont;
 
-					// Get status bar window font
-					hFont = ( HFONT )GetStockObject( DEFAULT_GUI_FONT );
+					// Get rich edit window font
+					hFont = ( HFONT )GetStockObject( ANSI_FIXED_FONT );
 
-					// Set status bar window font
-					StatusBarWindowSetFont( hFont );
+					// Set rich edit window font
+					RichEditWindowSetFont( hFont );
 
-					// Load context menu
-					g_hMenuContext = LoadMenu( NULL, MAKEINTRESOURCE( IDR_CONTEXT_MENU ) );
+					// Create status bar window
+					if( StatusBarWindowCreate( hWndMain, hInstance ) )
+					{
+						// Successfully created status bar window
 
-					// Add main window as a clipboard listener
-					AddClipboardFormatListener( hWndMain );
+						// Get status bar window font
+						hFont = ( HFONT )GetStockObject( DEFAULT_GUI_FONT );
 
-				} // End of successfully created status bar window
+						// Set status bar window font
+						StatusBarWindowSetFont( hFont );
 
-			} // End of successfully created rich edit window
+						// Load context menu
+						g_hMenuContext = LoadMenu( NULL, MAKEINTRESOURCE( IDR_CONTEXT_MENU ) );
+
+						// Add main window as a clipboard listener
+						AddClipboardFormatListener( hWndMain );
+
+					} // End of successfully created status bar window
+
+				} // End of successfully created rich edit window
+
+			} // End of successfully created tool bar window
 
 			// Break out of switch
 			break;
@@ -222,7 +257,9 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 			// A size message
 			int nClientWidth;
 			int nClientHeight;
+			RECT rcToolBar;
 			RECT rcStatusBar;
+			int nToolBarWindowHeight;
 			int nStatusBarWindowHeight;
 			int nRichEditWindowHeight;
 
@@ -230,18 +267,25 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 			nClientWidth	= LOWORD( lParam );
 			nClientHeight	= HIWORD( lParam );
 
+			// Auto-size tool bar window
+			ToolBarWindowAutoSize();
+
 			// Size status bar window
 			StatusBarWindowSize();
+
+			// Get tool bar window size
+			ToolBarWindowGetRect( &rcToolBar );
 
 			// Get status bar window size
 			StatusBarWindowGetRect( &rcStatusBar );
 
 			// Calculate window sizes
+			nToolBarWindowHeight	= ( rcToolBar.bottom - rcToolBar.top );
 			nStatusBarWindowHeight	= ( rcStatusBar.bottom - rcStatusBar.top );
-			nRichEditWindowHeight	= ( nClientHeight - nStatusBarWindowHeight );
+			nRichEditWindowHeight	= ( nClientHeight - ( nToolBarWindowHeight + nStatusBarWindowHeight ) );
 
 			// Move control windows
-			RichEditWindowMove( 0, 0, nClientWidth, nRichEditWindowHeight, TRUE );
+			RichEditWindowMove( 0, nToolBarWindowHeight, nClientWidth, nRichEditWindowHeight, TRUE );
 
 			// Break out of switch
 			break;
@@ -381,7 +425,6 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 				{
 					// Default command
 
-
 					// See if command is from rich edit window
 					if( IsRichEditWindow( ( HWND )lParam ) )
 					{
@@ -454,12 +497,45 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 			break;
 
 		} // End of a system command message
+		case WM_NOTIFY:
+		{
+			// A notify message
+
+			// See if notify message is from rich edit window
+			if( IsRichEditWindow( ( ( LPNMHDR )lParam )->hwndFrom ) )
+			{
+				// Notify message is from rich edit window
+
+				// Handle notify message from rich edit window
+				if( !( RichEditWindowHandleNotifyMessage( hWndMain, wParam, lParam, &RichEditWindowSelectionChangeFunction ) ) )
+				{
+					// Notify message was not handled from rich edit window
+
+					// Call default procedure
+					lr = DefWindowProc( hWndMain, uMessage, wParam, lParam );
+
+				} // End of notify message was not handled from rich edit window
+
+			} // End of notify message is from rich edit window
+			else
+			{
+				// Notify message is not from rich edit window
+
+				// Call default procedure
+				lr = DefWindowProc( hWndMain, uMessage, wParam, lParam );
+
+			} // End of notify message is not from rich edit window
+
+			// Break out of switch
+			break;
+
+		} // End of a notify message
 		case WM_CLIPBOARDUPDATE:
 		{
 			// A clipboard update message
 
 			// Update paste buttons
-			UpdatePasteButtons( hWndMain );
+			UpdatePasteButton( hWndMain );
 
 			// Break out of switch
 			break;
@@ -513,6 +589,9 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 		{
 			// A destroy message
 
+			// Remove main window as a clipboard listener
+			RemoveClipboardFormatListener( hWndMain );
+
 			// Terminate thread
 			PostQuitMessage( 0 );
 
@@ -523,9 +602,6 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 		default:
 		{
 			// Default message
-
-			// Remove main window as a clipboard listener
-			RemoveClipboardFormatListener( hWndMain );
 
 			// Call default procedure
 			lr = DefWindowProc( hWndMain, uMessage, wParam, lParam );

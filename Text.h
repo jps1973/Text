@@ -13,6 +13,7 @@
 
 #include "RichEditWindow.h"
 #include "StatusBarWindow.h"
+#include "ToolBarWindow.h"
 
 #define MAIN_WINDOW_CLASS_NAME													"Main Text Window Class"
 
