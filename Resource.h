@@ -15,4 +15,7 @@
 #define IDM_EDIT_PASTE															2005
 #define IDM_EDIT_DELETE															2006
 #define IDM_EDIT_SELECT_ALL														2010
+#define IDM_CASE_UPPER															3001
+#define IDM_CASE_LOWER															3002
+#define IDM_CASE_TITLE															3003
 #define IDM_HELP_ABOUT															9001

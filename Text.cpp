@@ -460,6 +460,39 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 					break;
 
 				} // End of an edit select all command
+				case IDM_CASE_UPPER:
+				{
+					// A case upper command
+
+					// Change case to upper case
+					RichEditWindowChangeToUpperCase();
+
+					// Break out of switch
+					break;
+
+				} // End of a case upper command
+				case IDM_CASE_LOWER:
+				{
+					// A case lower command
+
+					// Change case to lower case
+					RichEditWindowChangeToLowerCase();
+
+					// Break out of switch
+					break;
+
+				} // End of a case lower command
+				case IDM_CASE_TITLE:
+				{
+					// A case title command
+
+					// Change case to title case
+					RichEditWindowChangeToTitleCase();
+
+					// Break out of switch
+					break;
+
+				} // End of a case title command
 				case IDM_FILE_EXIT:
 				{
 					// A file exit command

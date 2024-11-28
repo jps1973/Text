@@ -38,6 +38,12 @@ IDR_MAIN_MENU MENU
 		MENUITEM SEPARATOR
 		MENUITEM "Select All",													IDM_EDIT_SELECT_ALL
 	END
+	POPUP "&Case"
+	BEGIN
+		MENUITEM "TO UPPER CASE ",												IDM_CASE_UPPER
+		MENUITEM "to lower case",												IDM_CASE_LOWER
+		MENUITEM "To Title Case",												IDM_CASE_TITLE
+	END
 	POPUP "&Help"
 	BEGIN
 		MENUITEM "&About",														IDM_HELP_ABOUT

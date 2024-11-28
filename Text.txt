@@ -1,3 +1,3 @@
-ddddddfffff#define WINVER																	_WIN32_WINNT_WIN10
-#define _WIN32_WINNT															_WIN32_WINNT_WIN10
-WINNT
+Ddddddfffff#define Winver																	_win32_winnt_win10
+#define _win32_winnt															_win32_winnt_win10
+winnt
