@@ -223,7 +223,17 @@ BOOL RichTextWindowPopulate( LPCTSTR lpszFileName )
 	SendMessage( g_hWndRichText, LB_RESETCONTENT, ( WPARAM )NULL, ( LPARAM )NULL );
 
 	// Load file
-	bResult = RichTextWindowLoad( lpszFileName );
+	if( RichTextWindowLoad( lpszFileName ) )
+	{
+		// Successfully loaded file
+
+		// Select text
+		RichTextWindowSelect();
+
+		// Update return value
+		bResult = TRUE;
+
+	} // End of successfully loaded file
 
 	return bResult;
 
@@ -294,6 +304,13 @@ BOOL RichTextWindowSave( LPCTSTR lpszFileName )
 	return bResult;
 
 } // End of function RichTextWindowSave
+
+void RichTextWindowSelect( int nStart, int nEnd )
+{
+	// Select rich text window text
+	SendMessage( g_hWndRichText, EM_SETSEL, ( WPARAM )nStart, ( LPARAM )nEnd );
+
+} // End of function RichTextWindowSetFont
 
 HWND RichTextWindowSetFocus()
 {

@@ -37,6 +37,8 @@ BOOL RichTextWindowLoad( LPCTSTR lpszFileName );
 
 BOOL RichTextWindowPopulate( LPCTSTR lpszFileName );
 
+void RichTextWindowSelect( int nStart = 0, int nEnd = -1 );
+
 BOOL RichTextWindowSave( LPCTSTR lpszFileName );
 
 HWND RichTextWindowSetFocus();
