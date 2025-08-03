@@ -12,6 +12,84 @@ BOOL IsRichTextWindow( HWND hWnd )
 
 } // End of function IsRichTextWindow
 
+BOOL RichTextWindowCopy()
+{
+	BOOL bResult = FALSE;
+
+	DWORD dwStart;
+	DWORD dwEnd;
+	DWORD dwSelectedTextLength;
+
+	// Get start and end of selection
+	SendMessage( g_hWndRichText, EM_GETSEL, ( WPARAM )&dwStart, ( LPARAM )&dwEnd );
+
+	// Calculate selected text length
+	dwSelectedTextLength = ( dwEnd - dwStart );
+
+	// Ensure that some text is selected
+	if( dwSelectedTextLength > 0 )
+	{
+		// Some text is selected
+		DWORD dwBufferLength;
+
+		// Calculate buffer length
+		dwBufferLength = ( dwSelectedTextLength + sizeof( char ) );
+
+		// Allocate string memory
+		LPTSTR lpszSelectedText = new char[ dwBufferLength ];
+
+		// Get selected text
+		if( SendMessage( g_hWndRichText, EM_GETSELTEXT, ( WPARAM )NULL, ( LPARAM )lpszSelectedText ) )
+		{
+			// Successfully got selected text
+
+			// Open clipboard
+			if( OpenClipboard( NULL ) )
+			{
+				// Successfully opened clipboard
+				HGLOBAL hClipboard;
+
+				// Allocate global memory
+				hClipboard = GlobalAlloc( GMEM_MOVEABLE, dwBufferLength );
+
+				// Ensure that global memory was allocated
+				if( hClipboard )
+				{
+					// Successfully allocated global memory
+
+					// Copy selected text into global memory
+					memcpy( GlobalLock( hClipboard ), lpszSelectedText, dwBufferLength );
+
+					// Unlock global memory
+					GlobalUnlock( hClipboard );
+
+					// Update clipboard
+					SetClipboardData( CF_TEXT, hClipboard );
+
+					// Update return value
+					bResult = TRUE;
+
+					// Free global memory
+					GlobalFree( hClipboard );
+
+				} // End of successfully allocated global memory
+
+				// Close clipboard
+				CloseClipboard();
+
+			} // End of successfully opened clipboard
+
+		} // End of successfully got window text
+
+		// Free string memory
+		delete [] lpszSelectedText;
+
+	} // End of some text is selected
+
+	return bResult;
+
+} // End of function RichTextWindowCopy
+
 BOOL RichTextWindowCreate( HWND hWndParent, HINSTANCE hInstance )
 {
 	BOOL bResult = FALSE;
@@ -27,6 +105,9 @@ BOOL RichTextWindowCreate( HWND hWndParent, HINSTANCE hInstance )
 	{
 		// Successfully created rich text window
 
+		// Set rich text window text mode
+		SendMessage( g_hWndRichText, EM_SETTEXTMODE, ( WPARAM )RICH_TEXT_WINDOW_TEXT_MODE, ( LPARAM )NULL );
+
 		// Update return value
 		bResult = TRUE;
 
@@ -35,6 +116,31 @@ BOOL RichTextWindowCreate( HWND hWndParent, HINSTANCE hInstance )
 	return bResult;
 
 } // End of function RichTextWindowCreate
+
+BOOL RichTextWindowCut( BOOL bCanUndo )
+{
+	BOOL bResult = FALSE;
+
+	// Copy selected text
+	if( RichTextWindowCopy() )
+	{
+		// Successfully copied selected text
+
+		// Delete selected text
+		bResult = RichTextWindowDelete( bCanUndo );
+
+	} // End of successfully copied selected text
+
+	return bResult;
+
+} // End of function RichTextWindowCopy
+
+BOOL RichTextWindowDelete( BOOL bCanUndo )
+{
+	// Delete selected text
+	return SendMessage( g_hWndRichText, EM_REPLACESEL, ( WPARAM )bCanUndo, ( LPARAM )EMPTY_STRING );
+
+} // End of function RichTextWindowDelete
 
 BOOL RichTextWindowGetRect( LPRECT lpRect )
 {
@@ -152,13 +258,6 @@ BOOL RichTextWindowHandleNotifyMessage( WPARAM, LPARAM lParam, BOOL( *lpStatusFu
 
 } // End of function RichTextWindowHandleNotifyMessage
 
-BOOL RichTextWindowMove( int nX, int nY, int nWidth, int nHeight, BOOL bRepaint )
-{
-	// Move rich text window
-	return MoveWindow( g_hWndRichText, nX, nY, nWidth, nHeight, bRepaint );
-
-} // End of function RichTextWindowMove
-
 BOOL RichTextWindowLoad( LPCTSTR lpszFileName )
 {
 	BOOL bResult = FALSE;
@@ -215,6 +314,56 @@ BOOL RichTextWindowLoad( LPCTSTR lpszFileName )
 
 } // End of function RichTextWindowLoad
 
+BOOL RichTextWindowMove( int nX, int nY, int nWidth, int nHeight, BOOL bRepaint )
+{
+	// Move rich text window
+	return MoveWindow( g_hWndRichText, nX, nY, nWidth, nHeight, bRepaint );
+
+} // End of function RichTextWindowMove
+
+BOOL RichTextWindowPaste( BOOL bCanUndo )
+{
+	BOOL bResult = FALSE;
+
+	// Open clipboard
+	if( OpenClipboard( NULL ) )
+	{
+		// Successfully opened clipboard
+		HANDLE hClipboard;
+
+		// Get clipboard data
+		hClipboard = GetClipboardData( CF_TEXT );
+
+		// Ensure that clipboard data was got
+		if( hClipboard )
+		{
+			// Successfully got clipboard data
+			LPTSTR lpszClipboardText;
+
+			// Get clipboard text
+			lpszClipboardText = static_cast<LPTSTR>( GlobalLock( hClipboard ) );
+
+			// Ensure that clipboard text was got
+			if( lpszClipboardText )
+			{
+				// Successfully got clipboard text
+
+				// Replace selected text
+				bResult = SendMessage( g_hWndRichText, EM_REPLACESEL, ( WPARAM )bCanUndo, ( LPARAM )lpszClipboardText );
+
+			} // End of successfully got clipboard text
+
+		} // End of successfully got clipboard data
+
+		// Close clipboard
+		CloseClipboard();
+
+	} // End of successfully opened clipboard
+
+	return bResult;
+
+} // End of function RichTextWindowPaste
+
 BOOL RichTextWindowPopulate( LPCTSTR lpszFileName )
 {
 	BOOL bResult = FALSE;
@@ -238,6 +387,13 @@ BOOL RichTextWindowPopulate( LPCTSTR lpszFileName )
 	return bResult;
 
 } // End of function RichTextWindowPopulate
+
+BOOL RichTextWindowRedo()
+{
+	// Undo
+	return SendMessage( g_hWndRichText, EM_REDO, ( WPARAM )NULL, ( LPARAM )NULL );
+
+} // End of function RichTextWindowRedo
 
 BOOL RichTextWindowSave( LPCTSTR lpszFileName )
 {
@@ -325,3 +481,11 @@ void RichTextWindowSetFont( HFONT hFont )
 	SendMessage( g_hWndRichText, WM_SETFONT, ( WPARAM )hFont, ( LPARAM )TRUE );
 
 } // End of function RichTextWindowSetFont
+
+BOOL RichTextWindowUndo()
+{
+	// Redo
+	return SendMessage( g_hWndRichText, EM_UNDO, ( WPARAM )NULL, ( LPARAM )NULL );
+
+} // End of function RichTextWindowUndo
+

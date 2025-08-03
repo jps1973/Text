@@ -13,6 +13,8 @@
 #define WINDOW_BORDER_WIDTH														::GetSystemMetrics( SM_CXBORDER )
 #define WINDOW_BORDER_HEIGHT													::GetSystemMetrics( SM_CYBORDER )
 
+#define EMPTY_STRING															""
+
 #define SHELL_EXECUTE_OPEN_COMMAND												"open"
 #define SHELL_EXECUTE_MINIMUM_SUCCESS_RETURN_VALUE								32
 // Note that you need to cast ShellExecute to an INT_PTR in order to use the above, e.g.
