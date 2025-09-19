@@ -115,6 +115,83 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 			// Select command
 			switch( LOWORD( wParam ) )
 			{
+				case IDM_EDIT_UNDO:
+				{
+					// An edit undo command
+
+					// Undo
+					ControlWindowUndo();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit undo command
+				case IDM_EDIT_REDO:
+				{
+					// An edit redo command
+
+					// Redo
+					ControlWindowRedo();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit redo command
+				case IDM_EDIT_CUT:
+				{
+					// An edit cut command
+
+					// Cut
+					ControlWindowCut();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit cut command
+				case IDM_EDIT_COPY:
+				{
+					// An edit copy command
+
+					// Copy
+					ControlWindowCopy();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit copy command
+				case IDM_EDIT_PASTE:
+				{
+					// An edit paste command
+
+					// Paste
+					ControlWindowPaste();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit paste command
+				case IDM_EDIT_DELETE:
+				{
+					// An edit delete command
+
+					// Delete
+					ControlWindowDelete();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit delete command
+				case IDM_EDIT_SELECT_ALL:
+				{
+					// An edit select all command
+
+					// Select all text in control window
+					ControlWindowSelectText();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit select all command
 				case IDM_HELP_ABOUT:
 				{
 					// A help about command

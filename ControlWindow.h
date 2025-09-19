@@ -17,9 +17,17 @@
 #define CONTROL_WINDOW_STYLE													( WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | WS_BORDER | ES_MULTILINE )
 #define CONTROL_WINDOW_TEXT														NULL
 
+#define CONTROL_WINDOW_TEXT_MODE												( TM_PLAINTEXT | TM_MULTILEVELUNDO | TM_MULTICODEPAGE )
+
 BOOL IsControlWindow( HWND hWnd );
 
+BOOL ControlWindowCopy();
+
 BOOL ControlWindowCreate( HWND hWndParent, HINSTANCE hInstance );
+
+BOOL ControlWindowCut();
+
+void ControlWindowDelete();
 
 BOOL ControlWindowGetRect( LPRECT lpRect );
 
@@ -31,8 +39,14 @@ BOOL ControlWindowMove( DWORD dwX, DWORD dwY, DWORD dwWidth, DWORD dwHeight, BOO
 
 BOOL ControlWindowLoad( LPCTSTR lpszFileName );
 
+BOOL ControlWindowPaste();
+
+BOOL ControlWindowRedo();
+
 BOOL ControlWindowSave( LPCTSTR lpszFileName );
 
 void ControlWindowSelectText( int nStart = 0, int nEnd = -1 );
 
 HWND ControlWindowSetFocus();
+
+BOOL ControlWindowUndo();

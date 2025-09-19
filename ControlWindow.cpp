@@ -12,6 +12,80 @@ BOOL IsControlWindow( HWND hWnd )
 
 } // End of function IsControlWindow
 
+BOOL ControlWindowCopy()
+{
+	BOOL bResult = FALSE;
+
+	DWORD dwStart;
+	DWORD dwEnd;
+
+	// Get selection
+	SendMessage( g_hWndControl, EM_GETSEL, ( WPARAM )&dwStart, ( LPARAM )&dwEnd );
+
+	// Ensure that some text is selected
+	if( dwEnd > dwStart )
+	{
+		// Some text is selected
+
+		// Open clipboard
+		if( OpenClipboard( NULL ) )
+		{
+			// Successfully opened clipboard
+			DWORD dwBufferLength;
+
+			// Calculate buffer length
+			dwBufferLength = ( ( dwEnd - dwStart ) + sizeof( char ) );
+
+			// Allocate string memory
+			LPTSTR lpszSelectedText = new char[ dwBufferLength ];
+
+			// Get selected text
+			if( SendMessage( g_hWndControl, EM_GETSELTEXT, ( WPARAM )NULL, ( LPARAM )lpszSelectedText ) )
+			{
+				// Successfully got selected text
+				HGLOBAL hGlobal;
+
+				// Empty clipboard
+				EmptyClipboard();
+
+				// Allocate global memory
+				hGlobal = GlobalAlloc( GMEM_MOVEABLE, dwBufferLength );
+
+				// Ensure that global memory was allocated
+				if( hGlobal )
+				{
+					// Successfully allocated global memory
+
+					// Copy selected text into global memory
+					memcpy( GlobalLock( hGlobal ), lpszSelectedText, dwBufferLength );
+
+					// Unlock global memory
+					GlobalUnlock( hGlobal );
+
+					// Update clipboard
+					SetClipboardData( CF_TEXT, hGlobal );
+
+					// Free global memory
+					GlobalFree( hGlobal );
+
+				} // End of successfully allocated global memory
+
+			} // End of successfully got selected text
+
+			// Free string memory
+			delete [] lpszSelectedText;
+
+			// Close clipboard
+			CloseClipboard();
+
+		} // End of successfully opened clipboard
+
+	} // End of some text is selected
+
+	return bResult;
+
+} // End of function ControlWindowCopy
+
 BOOL ControlWindowCreate( HWND hWndParent, HINSTANCE hInstance )
 {
 	BOOL bResult = FALSE;
@@ -36,6 +110,9 @@ BOOL ControlWindowCreate( HWND hWndParent, HINSTANCE hInstance )
 			// Set control window font
 			SendMessage( g_hWndControl, WM_SETFONT, ( WPARAM )hFont, ( LPARAM )TRUE );
 
+			// Set control window text mode
+			SendMessage( g_hWndControl, EM_SETTEXTMODE, ( WPARAM )CONTROL_WINDOW_TEXT_MODE, ( LPARAM )NULL );
+
 			// Update return value
 			bResult = TRUE;
 
@@ -46,6 +123,34 @@ BOOL ControlWindowCreate( HWND hWndParent, HINSTANCE hInstance )
 	return bResult;
 
 } // End of function ControlWindowCreate
+
+BOOL ControlWindowCut()
+{
+	BOOL bResult = FALSE;
+
+	// Copy text
+	if( ControlWindowCopy() )
+	{
+		// Successfully copied text
+
+		// Delete text
+		ControlWindowDelete();
+
+		// Update return value
+		bResult = TRUE;
+
+	} // End of successfully copied text
+
+	return bResult;
+
+} // End of function ControlWindowCut
+
+void ControlWindowDelete()
+{
+	// Delete text
+	SendMessage( g_hWndControl, EM_REPLACESEL, ( WPARAM )TRUE, ( LPARAM )NULL );
+
+} // End of function ControlWindowDelete
 
 BOOL ControlWindowGetRect( LPRECT lpRect )
 {
@@ -170,6 +275,48 @@ BOOL ControlWindowLoad( LPCTSTR lpszFileName )
 
 } // End of function ControlWindowLoad
 
+BOOL ControlWindowPaste()
+{
+	BOOL bResult = FALSE;
+
+	// Open clipboard
+	if( OpenClipboard( NULL ) )
+	{
+		// Successfully opened clipboard
+		HANDLE hClipboard;
+
+		// Get clipboard data
+		hClipboard = GetClipboardData( CF_TEXT );
+
+		// Ensure that clipboard data was got
+		if( hClipboard )
+		{
+			// Successfully got clipboard data
+
+			// Replace selection with clipboard text
+			SendMessage( g_hWndControl, EM_REPLACESEL, ( WPARAM )TRUE, ( LPARAM )( ( LPTSTR )hClipboard ) );
+
+			// Update return value
+			bResult = TRUE;
+
+		} // End of successfully got clipboard data
+
+		// Close clipboard
+		CloseClipboard();
+
+	} // End of successfully opened clipboard
+
+	return bResult;
+
+} // End of function ControlWindowPaste
+
+BOOL ControlWindowRedo()
+{
+	// Redo
+	return SendMessage( g_hWndControl, EM_REDO, ( WPARAM )NULL, ( LPARAM )NULL );
+
+} // End of function ControlWindowRedo
+
 BOOL ControlWindowSave( LPCTSTR lpszFileName )
 {
 	BOOL bResult = 0;
@@ -249,3 +396,10 @@ HWND ControlWindowSetFocus()
 	return SetFocus( g_hWndControl );
 
 } // End of function ControlWindowSetFocus
+
+BOOL ControlWindowUndo()
+{
+	// Undo
+	return SendMessage( g_hWndControl, EM_UNDO, ( WPARAM )NULL, ( LPARAM )NULL );
+
+} // End of function ControlWindowUndo
