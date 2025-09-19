@@ -19,6 +19,8 @@
 
 #define CONTROL_WINDOW_TEXT_MODE												( TM_PLAINTEXT | TM_MULTILEVELUNDO | TM_MULTICODEPAGE )
 
+#define CONTROL_WINDOW_EVENT_MASK												( ENM_SELCHANGE | ENM_UPDATE )
+
 BOOL IsControlWindow( HWND hWnd );
 
 BOOL ControlWindowCopy();
@@ -31,9 +33,9 @@ void ControlWindowDelete();
 
 BOOL ControlWindowGetRect( LPRECT lpRect );
 
-BOOL ControlWindowHandleCommandMessage( WPARAM wParam, LPARAM lParam );
+BOOL ControlWindowHandleCommandMessage( WPARAM wParam, LPARAM lParam, void( *lpUpdateFunction )( BOOL bCanUndo, BOOL bCanRedo ) );
 
-BOOL ControlWindowHandleNotifyMessage( WPARAM wParam, LPARAM lParam );
+BOOL ControlWindowHandleNotifyMessage( WPARAM wParam, LPARAM lParam, void( *lpSelectionChangedFunction )( BOOL bIsTextSelected ) );
 
 BOOL ControlWindowMove( DWORD dwX, DWORD dwY, DWORD dwWidth, DWORD dwHeight, BOOL bRepaint = TRUE );
 

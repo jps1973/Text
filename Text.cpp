@@ -2,6 +2,75 @@
 
 #include "Text.h"
 
+// Global variables
+HMENU g_hContextMenu;
+
+void ControlWindowUpdateFunction( BOOL bCanUndo, BOOL bCanRedo )
+{
+	// See if undo is possible
+	if( bCanUndo )
+	{
+		// Undo is possible
+
+		// Enable undo on context menu
+		EnableMenuItem( g_hContextMenu, IDM_EDIT_UNDO, MF_ENABLED );
+
+	} // End of undo is possible
+	else
+	{
+		// Undo is not possible
+
+		// Disable undo on context menu
+		EnableMenuItem( g_hContextMenu, IDM_EDIT_UNDO, MF_DISABLED );
+
+	} // End of undo is not possible
+
+	// See if redo is possible
+	if( bCanRedo )
+	{
+		// Redo is possible
+
+		// Enable redo on context menu
+		EnableMenuItem( g_hContextMenu, IDM_EDIT_REDO, MF_ENABLED );
+
+	} // End of redo is possible
+	else
+	{
+		// Redo is not possible
+
+		// Disable redo on context menu
+		EnableMenuItem( g_hContextMenu, IDM_EDIT_REDO, MF_DISABLED );
+
+	} // End of redo is not possible
+
+} // End of function ControlWindowUpdateFunction
+
+void ControlWindowSelectionChangedFunction( BOOL bIsTextSelected )
+{
+	// See if any text is selected
+	if( bIsTextSelected )
+	{
+		// Some text is selected
+
+		// Enable context menu items
+		EnableMenuItem( g_hContextMenu, IDM_EDIT_CUT,		MF_ENABLED );
+		EnableMenuItem( g_hContextMenu, IDM_EDIT_COPY,		MF_ENABLED );
+		EnableMenuItem( g_hContextMenu, IDM_EDIT_DELETE,	MF_ENABLED );
+
+	} // End of some text is selected
+	else
+	{
+		// Some no is selected
+
+		// Enable context menu items
+		EnableMenuItem( g_hContextMenu, IDM_EDIT_CUT,		MF_DISABLED );
+		EnableMenuItem( g_hContextMenu, IDM_EDIT_COPY,		MF_DISABLED );
+		EnableMenuItem( g_hContextMenu, IDM_EDIT_DELETE,	MF_DISABLED );
+
+	} // End of some no is selected
+
+} // End of function ControlWindowSelectionChangedFunction
+
 LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARAM lParam )
 {
 	LRESULT lr = 0;
@@ -17,10 +86,17 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 			// Get instance handle
 			hInstance = ( ( ( LPCREATESTRUCT )lParam )->hInstance );
 
+			// Add main window as a clipboard listener
+			AddClipboardFormatListener( hWndMain );
+
 			// Create control window
 			if( ControlWindowCreate( hWndMain, hInstance ) )
 			{
 				// Successfully created control window
+
+				// Load context menu
+				g_hContextMenu = LoadMenu( NULL, MAKEINTRESOURCE( IDR_CONTEXT_MENU ) );
+
 
 			} // End of successfully created control window
 
@@ -94,10 +170,9 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 		} // End of a move message
 		case WM_GETMINMAXINFO:
 		{
-			// A get min max info message
+			// Get min max info structure
 			MINMAXINFO FAR *lpMinMaxInfo;
 
-			// Get min max info structure
 			lpMinMaxInfo = ( MINMAXINFO FAR * )lParam;
 
 			// Update min max info structure
@@ -107,7 +182,33 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 			// Break out of switch
 			break;
 
-		} // End of a get min max info message
+		} // End of a get min max info structure
+		case WM_CLIPBOARDUPDATE:
+		{
+			// A clipboard update message
+
+			// See if clipboard contains text
+			if( IsClipboardFormatAvailable( CF_TEXT ) )
+			{
+				// Clipboard contains text
+
+				// Enable paste item on context menu
+				EnableMenuItem( g_hContextMenu, IDM_EDIT_PASTE, MF_ENABLED );
+
+			} // End of clipboard contains text
+			else
+			{
+				// Clipboard contains no text
+
+				// Disable paste item on context menu
+				EnableMenuItem( g_hContextMenu, IDM_EDIT_PASTE, MF_DISABLED );
+
+			} // End of clipboard contains no text
+
+			// Break out of switch
+			break;
+
+		} // End of a clipboard update message
 		case WM_COMMAND:
 		{
 			// A command message
@@ -213,7 +314,7 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 						// Command message is from control window
 
 						// Handle command message from control window
-						if( !( ControlWindowHandleCommandMessage( wParam, lParam ) ) )
+						if( !( ControlWindowHandleCommandMessage( wParam, lParam, &ControlWindowUpdateFunction ) ) )
 						{
 							// Command message was not handled from control window
 
@@ -257,7 +358,7 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 				// Notify message is from control window
 
 				// Handle notify message from control window
-				if( !( ControlWindowHandleNotifyMessage( wParam, lParam ) ) )
+				if( !( ControlWindowHandleNotifyMessage( wParam, lParam, &ControlWindowSelectionChangedFunction ) ) )
 				{
 					// Notify message was not handled from control window
 
@@ -276,7 +377,6 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 
 			} // End of notify message is not from control window
 
-
 			// Break out of switch
 			break;
 
@@ -284,13 +384,9 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 		case WM_CONTEXTMENU:
 		{
 			// A context menu message
-			HMENU hMenu;
-
-			// Load context menu
-			hMenu = LoadMenu( NULL, MAKEINTRESOURCE( IDR_CONTEXT_MENU ) );
 
 			// Show context menu
-			TrackPopupMenu( GetSubMenu( hMenu, 0 ), ( TPM_LEFTALIGN | TPM_LEFTBUTTON ), LOWORD( lParam ), HIWORD( lParam ), 0, hWndMain, NULL );
+			TrackPopupMenu( GetSubMenu( g_hContextMenu, 0 ), ( TPM_LEFTALIGN | TPM_LEFTBUTTON ), LOWORD( lParam ), HIWORD( lParam ), 0, hWndMain, NULL );
 
 			// Break out of switch
 			break;
@@ -305,6 +401,9 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 			{
 				// Successfully saved control window text
 
+				// Remove main window as a clipboard listener
+				RemoveClipboardFormatListener( hWndMain );
+
 				// Destroy main window
 				DestroyWindow( hWndMain );
 
@@ -317,6 +416,9 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 				if( MessageBox( hWndMain, UNABLE_TO_SAVE_TEXT_WARNING_MESSAGE, WARNING_MESSAGE_CAPTION, ( MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2 ) ) == IDYES )
 				{
 					// User is happy to close
+
+					// Remove main window as a clipboard listener
+					RemoveClipboardFormatListener( hWndMain );
 
 					// Destroy main window
 					DestroyWindow( hWndMain );

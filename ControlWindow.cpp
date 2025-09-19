@@ -113,6 +113,9 @@ BOOL ControlWindowCreate( HWND hWndParent, HINSTANCE hInstance )
 			// Set control window text mode
 			SendMessage( g_hWndControl, EM_SETTEXTMODE, ( WPARAM )CONTROL_WINDOW_TEXT_MODE, ( LPARAM )NULL );
 
+			// Set control window event mask
+			SendMessage( g_hWndControl, EM_SETEVENTMASK, ( WPARAM )NULL, ( LPARAM )CONTROL_WINDOW_EVENT_MASK );
+
 			// Update return value
 			bResult = TRUE;
 
@@ -159,13 +162,33 @@ BOOL ControlWindowGetRect( LPRECT lpRect )
 
 } // End of function ControlWindowGetRect
 
-BOOL ControlWindowHandleCommandMessage( WPARAM wParam, LPARAM )
+BOOL ControlWindowHandleCommandMessage( WPARAM wParam, LPARAM, void( *lpUpdateFunction )( BOOL bCanUndo, BOOL bCanRedo ) )
 {
 	BOOL bResult = FALSE;
 
 	// Select control window notification code
 	switch( HIWORD( wParam ) )
 	{
+		case EN_UPDATE:
+		{
+			// An edit window update message
+			BOOL bCanUndo;
+			BOOL bCanRedo;
+
+			// Update undo and redo values
+			bCanUndo = SendMessage( g_hWndControl, EM_CANUNDO, ( WPARAM )NULL, ( LPARAM )NULL );
+			bCanRedo = SendMessage( g_hWndControl, EM_CANREDO, ( WPARAM )NULL, ( LPARAM )NULL );
+
+			// Call update function
+			( *lpUpdateFunction )( bCanUndo, bCanRedo );
+
+			// Update return value
+			bResult = TRUE;
+
+			// Break out of switch
+			break;
+
+		} // End of an edit window update message
 		default:
 		{
 			// Default notification code
@@ -183,7 +206,7 @@ BOOL ControlWindowHandleCommandMessage( WPARAM wParam, LPARAM )
 
 } // End of function ControlWindowHandleCommandMessage
 
-BOOL ControlWindowHandleNotifyMessage( WPARAM, LPARAM lParam )
+BOOL ControlWindowHandleNotifyMessage( WPARAM, LPARAM lParam, void( *lpSelectionChangedFunction )( BOOL bIsTextSelected ) )
 {
 	BOOL bResult = FALSE;
 
@@ -195,6 +218,37 @@ BOOL ControlWindowHandleNotifyMessage( WPARAM, LPARAM lParam )
 	// Select control window notification code
 	switch( lpNmhdr->code )
 	{
+		case EN_SELCHANGE:
+		{
+			// A control window selection change notification code
+			DWORD dwStart;
+			DWORD dwEnd;
+
+			// Get selection
+			SendMessage( g_hWndControl, EM_GETSEL, ( WPARAM )&dwStart, ( LPARAM )&dwEnd );
+
+			// Ensure that some text is selected
+			if( dwEnd > dwStart )
+			{
+				// Some text is selected
+
+				// Call selection changed function
+				( *lpSelectionChangedFunction )( TRUE );
+
+			} // End of some text is selected
+			else
+			{
+				// No text is selected
+
+				// Call selection changed function
+				( *lpSelectionChangedFunction )( FALSE );
+
+			} // End of no text is selected
+
+			// Break out of switch
+			break;
+
+		} // End of a control window selection change notification code
 		default:
 		{
 			// Default notification code
