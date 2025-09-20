@@ -15,6 +15,9 @@ void ControlWindowUpdateFunction( BOOL bCanUndo, BOOL bCanRedo )
 		// Enable undo on context menu
 		EnableMenuItem( g_hContextMenu, IDM_EDIT_UNDO, MF_ENABLED );
 
+		// Enable undo on tool bar
+		ToolBarWindowEnableButton( IDM_EDIT_UNDO, TRUE );
+
 	} // End of undo is possible
 	else
 	{
@@ -22,6 +25,9 @@ void ControlWindowUpdateFunction( BOOL bCanUndo, BOOL bCanRedo )
 
 		// Disable undo on context menu
 		EnableMenuItem( g_hContextMenu, IDM_EDIT_UNDO, MF_DISABLED );
+
+		// Disable undo on tool bar
+		ToolBarWindowEnableButton( IDM_EDIT_UNDO, FALSE );
 
 	} // End of undo is not possible
 
@@ -33,6 +39,9 @@ void ControlWindowUpdateFunction( BOOL bCanUndo, BOOL bCanRedo )
 		// Enable redo on context menu
 		EnableMenuItem( g_hContextMenu, IDM_EDIT_REDO, MF_ENABLED );
 
+		// Enable redo on tool bar
+		ToolBarWindowEnableButton( IDM_EDIT_REDO, TRUE );
+
 	} // End of redo is possible
 	else
 	{
@@ -40,6 +49,9 @@ void ControlWindowUpdateFunction( BOOL bCanUndo, BOOL bCanRedo )
 
 		// Disable redo on context menu
 		EnableMenuItem( g_hContextMenu, IDM_EDIT_REDO, MF_DISABLED );
+
+		// Disable redo on tool bar
+		ToolBarWindowEnableButton( IDM_EDIT_REDO, FALSE );
 
 	} // End of redo is not possible
 
@@ -57,6 +69,11 @@ void ControlWindowSelectionChangedFunction( BOOL bIsTextSelected )
 		EnableMenuItem( g_hContextMenu, IDM_EDIT_COPY,		MF_ENABLED );
 		EnableMenuItem( g_hContextMenu, IDM_EDIT_DELETE,	MF_ENABLED );
 
+		// Enable tool bar items
+		ToolBarWindowEnableButton( IDM_EDIT_CUT,	TRUE );
+		ToolBarWindowEnableButton( IDM_EDIT_COPY,	TRUE );
+		ToolBarWindowEnableButton( IDM_EDIT_DELETE,	TRUE );
+
 	} // End of some text is selected
 	else
 	{
@@ -66,6 +83,11 @@ void ControlWindowSelectionChangedFunction( BOOL bIsTextSelected )
 		EnableMenuItem( g_hContextMenu, IDM_EDIT_CUT,		MF_DISABLED );
 		EnableMenuItem( g_hContextMenu, IDM_EDIT_COPY,		MF_DISABLED );
 		EnableMenuItem( g_hContextMenu, IDM_EDIT_DELETE,	MF_DISABLED );
+
+		// Disable tool bar items
+		ToolBarWindowEnableButton( IDM_EDIT_CUT,	FALSE );
+		ToolBarWindowEnableButton( IDM_EDIT_COPY,	FALSE );
+		ToolBarWindowEnableButton( IDM_EDIT_DELETE,	FALSE );
 
 	} // End of some no is selected
 
@@ -214,6 +236,9 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 				// Enable paste item on context menu
 				EnableMenuItem( g_hContextMenu, IDM_EDIT_PASTE, MF_ENABLED );
 
+				// Enable paste on context menu
+				ToolBarWindowEnableButton( IDM_EDIT_PASTE, TRUE );
+
 			} // End of clipboard contains text
 			else
 			{
@@ -221,6 +246,9 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 
 				// Disable paste item on context menu
 				EnableMenuItem( g_hContextMenu, IDM_EDIT_PASTE, MF_DISABLED );
+
+				// Disable paste on context menu
+				ToolBarWindowEnableButton( IDM_EDIT_PASTE, FALSE );
 
 			} // End of clipboard contains no text
 

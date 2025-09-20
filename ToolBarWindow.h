@@ -45,4 +45,6 @@ void ToolBarWindowAutoSize();
 
 BOOL ToolBarWindowCreate( HWND hWndParent, HINSTANCE hInstance );
 
+BOOL ToolBarWindowEnableButton( int nButtonID, BOOL bEnable );
+
 BOOL ToolBarWindowGetRect( LPRECT lpRect );

@@ -94,6 +94,13 @@ BOOL ToolBarWindowCreate( HWND hWndParent, HINSTANCE hInstance )
 
 } // End of function ToolBarWindowCreate
 
+BOOL ToolBarWindowEnableButton( int nButtonID, BOOL bEnable )
+{
+	// Enable tool bar window button
+	return SendMessage( g_hWndToolBar, TB_ENABLEBUTTON, ( WPARAM )nButtonID, ( LPARAM )bEnable );
+
+} // End of function ToolBarWindowEnable
+
 BOOL ToolBarWindowGetRect( LPRECT lpRect )
 {
 	// Get tool bar window rect
