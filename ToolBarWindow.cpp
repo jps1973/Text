@@ -6,27 +6,27 @@
 static HWND g_hWndToolBar;
 static HIMAGELIST g_hImageList;
 static TBBUTTON g_tbButtons[ TOOL_BAR_WINDOW_NUMBER_OF_BUTTONS ];
+static int g_nNextButtonID = 0;
 
 void ToolBarWindowAddButton( WORD wBitmap, int nCommand )
 {
 	int nBitmap;
 
-	static int s_nNextButtonID = 0;
 	// Clear tool bar button structure
-	ZeroMemory( &( g_tbButtons[ s_nNextButtonID ] ), sizeof( TBBUTTON) );
+	ZeroMemory( &( g_tbButtons[ g_nNextButtonID ] ), sizeof( TBBUTTON) );
 
 	// Get bitmap integer
 	nBitmap = MAKELONG( wBitmap, TOOL_BAR_WINDOW_IMAGE_LIST_ID );
 
 	// Update tool bar button structure
-	g_tbButtons[ s_nNextButtonID ].iBitmap		= nBitmap;
-	g_tbButtons[ s_nNextButtonID ].idCommand	= nCommand;
-	g_tbButtons[ s_nNextButtonID ].fsState		= TBSTATE_ENABLED;
-	g_tbButtons[ s_nNextButtonID ].fsStyle		= BTNS_AUTOSIZE;
-	g_tbButtons[ s_nNextButtonID ].iString		= 0;
+	g_tbButtons[ g_nNextButtonID ].iBitmap		= nBitmap;
+	g_tbButtons[ g_nNextButtonID ].idCommand	= nCommand;
+	g_tbButtons[ g_nNextButtonID ].fsState		= TBSTATE_ENABLED;
+	g_tbButtons[ g_nNextButtonID ].fsStyle		= BTNS_AUTOSIZE;
+	g_tbButtons[ g_nNextButtonID ].iString		= 0;
 
 	// Advance to next button
-	s_nNextButtonID ++;
+	g_nNextButtonID ++;
 
 } // End of function ToolBarWindowAddButton
 
@@ -43,6 +43,19 @@ BOOL ToolBarWindowAddButtons()
 	return bResult;
 
 } // End of function ToolBarWindowAddButtons
+
+void ToolBarWindowAddSeparator()
+{
+	// Clear tool bar button structure
+	ZeroMemory( &( g_tbButtons[ g_nNextButtonID ] ), sizeof( TBBUTTON) );
+
+	// Update tool bar button structure
+	g_tbButtons[ g_nNextButtonID ].fsStyle		= BTNS_SEP;
+
+	// Advance to next button
+	g_nNextButtonID ++;
+
+} // End of function ToolBarWindowAddButton
 
 void ToolBarWindowAutoSize()
 {

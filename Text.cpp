@@ -575,10 +575,12 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow )
 				// Add individual buttons to tool bar window
 				ToolBarWindowAddButton( STD_UNDO,	IDM_EDIT_UNDO );
 				ToolBarWindowAddButton( STD_REDOW,	IDM_EDIT_REDO );
+				ToolBarWindowAddSeparator();
 				ToolBarWindowAddButton( STD_CUT,	IDM_EDIT_CUT );
 				ToolBarWindowAddButton( STD_COPY,	IDM_EDIT_COPY );
 				ToolBarWindowAddButton( STD_PASTE,	IDM_EDIT_PASTE );
 				ToolBarWindowAddButton( STD_DELETE,	IDM_EDIT_DELETE );
+				ToolBarWindowAddSeparator();
 				ToolBarWindowAddButton( STD_HELP,	IDM_HELP_ABOUT );
 
 				// Add buttons to tool bar window
