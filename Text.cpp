@@ -89,16 +89,22 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 			// Add main window as a clipboard listener
 			AddClipboardFormatListener( hWndMain );
 
-			// Create control window
-			if( ControlWindowCreate( hWndMain, hInstance ) )
+			// Create tool bar window
+			if( ToolBarWindowCreate( hWndMain, hInstance ) )
 			{
-				// Successfully created control window
+				// Successfully created tool bar window
 
-				// Load context menu
-				g_hContextMenu = LoadMenu( NULL, MAKEINTRESOURCE( IDR_CONTEXT_MENU ) );
+				// Create control window
+				if( ControlWindowCreate( hWndMain, hInstance ) )
+				{
+					// Successfully created control window
 
+					// Load context menu
+					g_hContextMenu = LoadMenu( NULL, MAKEINTRESOURCE( IDR_CONTEXT_MENU ) );
 
-			} // End of successfully created control window
+				} // End of successfully created control window
+
+			} // End of successfully created tool bar window
 
 			// Break out of switch
 			break;
@@ -121,13 +127,26 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 			RegistryKey registryKey;
 			DWORD dwClientWidth;
 			DWORD dwClientHeight;
+			DWORD dwToolbarWindowHeight;
+			DWORD dwControlWindowHeight;
+			RECT rcToolBar;
 
 			// Store client size
 			dwClientWidth	= LOWORD( lParam );
 			dwClientHeight	= HIWORD( lParam );
 
-			// Move control window to fit client
-			ControlWindowMove( 0, 0, dwClientWidth, dwClientHeight, TRUE );
+			// Auto-size tool bar window
+			ToolBarWindowAutoSize();
+
+			// Get tool bar window size
+			ToolBarWindowGetRect( &rcToolBar );
+
+			// Calculate window sizes
+			dwToolbarWindowHeight	= ( rcToolBar.bottom - rcToolBar.top );
+			dwControlWindowHeight	= ( dwClientHeight - dwToolbarWindowHeight );
+
+			// Move control window
+			ControlWindowMove( 0, dwToolbarWindowHeight, dwClientWidth, dwControlWindowHeight, TRUE );
 
 			// Create registry key
 			if( registryKey.Create( REGISTRY_KEY, REGISTRY_SUB_KEY ) )
@@ -552,6 +571,18 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow )
 
 				// Update main window
 				UpdateWindow( hWndMain );
+
+				// Add individual buttons to tool bar window
+				ToolBarWindowAddButton( STD_UNDO,	IDM_EDIT_UNDO );
+				ToolBarWindowAddButton( STD_REDOW,	IDM_EDIT_REDO );
+				ToolBarWindowAddButton( STD_CUT,	IDM_EDIT_CUT );
+				ToolBarWindowAddButton( STD_COPY,	IDM_EDIT_COPY );
+				ToolBarWindowAddButton( STD_PASTE,	IDM_EDIT_PASTE );
+				ToolBarWindowAddButton( STD_DELETE,	IDM_EDIT_DELETE );
+				ToolBarWindowAddButton( STD_HELP,	IDM_HELP_ABOUT );
+
+				// Add buttons to tool bar window
+				ToolBarWindowAddButtons();
 
 				// Load text into control window
 				if( ControlWindowLoad( TEXT_FILE_NAME ) )

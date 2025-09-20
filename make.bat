@@ -10,7 +10,8 @@ g++ -mwindows -m64 -static -Wall -Wextra ^
  ^
  ControlWindow.cpp ^
  RegistryKeyClass.cpp ^
+ ToolBarWindow.cpp ^
  ^
  Resource.o ^
  ^
- -o Text.exe
+ -o Text.exe -lcomctl32
