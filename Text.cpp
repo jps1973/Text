@@ -93,6 +93,31 @@ void ControlWindowSelectionChangedFunction( BOOL bIsTextSelected )
 
 } // End of function ControlWindowSelectionChangedFunction
 
+int ShowAboutMessage( HWND hWndParent )
+{
+	int nResult = 0;
+
+	MSGBOXPARAMS mbp;
+
+	// Clear message box parameter structure
+	ZeroMemory( &mbp, sizeof( mbp ) );
+
+	// Initialise message box parameter structure
+	mbp.cbSize		= sizeof( MSGBOXPARAMS );
+	mbp.hwndOwner	= hWndParent;
+	mbp.hInstance	= NULL; // Note that this must be null to use standard icons
+	mbp.lpszText	= ABOUT_MESSAGE_TEXT;
+	mbp.lpszCaption	= ABOUT_MESSAGE_CAPTION;
+	mbp.dwStyle		= ( MB_OK | MB_USERICON );
+	mbp.lpszIcon	= MAIN_WINDOW_CLASS_ICON_NAME;
+
+	// Show message box
+	nResult = MessageBoxIndirect( &mbp );
+
+	return nResult;
+
+} // End of function ShowAboutMessage
+
 LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wParam, LPARAM lParam )
 {
 	LRESULT lr = 0;
@@ -345,7 +370,7 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 					// A help about command
 
 					// Show about message
-					MessageBox( hWndMain, ABOUT_MESSAGE_TEXT, ABOUT_MESSAGE_CAPTION, ( MB_OK | MB_ICONINFORMATION ) );
+					ShowAboutMessage( hWndMain );
 
 					// Break out of switch
 					break;
@@ -528,11 +553,13 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow )
 	else
 	{
 		// Unable to find existing instance of window
+		WNDCLASSEX wcMain;
+
+		// Show splash screen
+		SplashScreenWindowShow( hInstance, ABOUT_MESSAGE_TEXT );
 
 		// Clear message structure
 		ZeroMemory( &msg, sizeof( msg ) );
-
-		WNDCLASSEX wcMain;
 
 		// Clear main window class structure structure
 		ZeroMemory( &wcMain, sizeof( wcMain ) );

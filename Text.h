@@ -8,6 +8,7 @@
 #include "Resource.h"
 
 #include "ControlWindow.h"
+#include "SplashScreenWindow.h"
 #include "ToolBarWindow.h"
 
 #include "RegistryKeyClass.h"
