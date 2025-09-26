@@ -284,27 +284,17 @@ BOOL SplashScreenWindowShow( HINSTANCE hInstance, LPCTSTR lpszText, DWORD dwMill
 		int nTop;
 
 		// Calculate window position
-		nLeft	= ( ( GetSystemMetrics( SM_CXSCREEN ) - SPLASH_SCREEN_WINDOW_WIDTH ) / 2 );
-		nTop	= ( ( GetSystemMetrics( SM_CYSCREEN ) - SPLASH_SCREEN_WINDOW_HEIGHT ) / 2 );
+		nLeft	= ( ( GetSystemMetrics( SM_CXSCREEN ) - SPLASH_SCREEN_WINDOW_INITIAL_WIDTH ) / 2 );
+		nTop	= ( ( GetSystemMetrics( SM_CYSCREEN ) - SPLASH_SCREEN_WINDOW_INITIAL_HEIGHT ) / 2 );
 
 		// Create splash screen window
-		hWndSplashScreen = CreateWindowEx( SPLASH_SCREEN_WINDOW_EXTENDED_STYLE, SPLASH_SCREEN_WINDOW_CLASS_NAME, SPLASH_SCREEN_WINDOW_TEXT, SPLASH_SCREEN_WINDOW_STYLE, nLeft, nTop, SPLASH_SCREEN_WINDOW_WIDTH, SPLASH_SCREEN_WINDOW_HEIGHT, NULL, NULL, hInstance, NULL );
+		hWndSplashScreen = CreateWindowEx( SPLASH_SCREEN_WINDOW_EXTENDED_STYLE, SPLASH_SCREEN_WINDOW_CLASS_NAME, SPLASH_SCREEN_WINDOW_TEXT, SPLASH_SCREEN_WINDOW_STYLE, nLeft, nTop, SPLASH_SCREEN_WINDOW_INITIAL_WIDTH, SPLASH_SCREEN_WINDOW_INITIAL_HEIGHT, NULL, NULL, hInstance, NULL );
 
 		// Ensure that splash screen window was created
 		if( hWndSplashScreen )
 		{
 			// Successfully created splash screen window
 			MSG msg;
-/*
-			HDC hdcWindow;
-			hdcWindow = GetDC( hWndSplashScreen );
-			SIZE size;
-			GetTextExtentPoint32( hdcWindow, g_lpszText, lstrlen( g_lpszText ) + 1, &size );
-			// Calculate window position
-			nLeft	= ( ( GetSystemMetrics( SM_CXSCREEN ) - size.cx ) / 2 );
-			nTop	= ( ( GetSystemMetrics( SM_CYSCREEN ) - size.cy ) / 2 );
-			MoveWindow( hWndSplashScreen, nLeft, nTop, size.cx, size.cy, TRUE );
-*/
 
 			// Show splash screen window
 			ShowWindow( hWndSplashScreen, SW_SHOW );
