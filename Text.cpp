@@ -109,6 +109,50 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 			// Select command
 			switch( LOWORD( wParam ) )
 			{
+				case IDM_FILE_NEW:
+				{
+					// A file new command
+
+					// Create new file
+					RichTextWindowNew();
+
+					// Break out of switch
+					break;
+
+				} // End of a file new command
+				case IDM_FILE_LOAD:
+				{
+					// A file load command
+
+					// Load file
+					RichTextWindowLoad( hWndMain );
+
+					// Break out of switch
+					break;
+
+				} // End of a file load command
+				case IDM_FILE_SAVE:
+				{
+					// A file save command
+
+					// Save file
+					RichTextWindowSave( hWndMain );
+
+					// Break out of switch
+					break;
+
+				} // End of a file save command
+				case IDM_FILE_SAVE_AS:
+				{
+					// A file save as command
+
+					// Save file as
+					RichTextWindowSaveAs( hWndMain );
+
+					// Break out of switch
+					break;
+
+				} // End of a file save as command
 				case IDM_FILE_EXIT:
 				{
 					// A file exit command
