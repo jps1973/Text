@@ -7,6 +7,39 @@ HMODULE g_hModuleRichEdit;
 HWND g_hWndRichEdit;
 LPTSTR g_lpszFilePath;
 
+BOOL RichTextWindowCheckModified( HWND hWndParent )
+{
+	BOOL bResult = FALSE;
+
+	// See if text is modified
+	if( RichTextWindowIsModified() )
+	{
+		// Text is modified
+
+		// Ensure that user is ok to continue
+		if( MessageBox( hWndParent, RICH_TEXT_WINDOW_CHECK_MODOFIED_MESSAGE_TEXT, WARNING_MESSAGE_CAPTION, ( MB_YESNO | MB_DEFBUTTON2 | MB_ICONWARNING ) ) == IDYES )
+		{
+			// User is ok to continue
+
+			// Update return value
+			bResult = TRUE;
+
+		} // End of user is ok to continue
+
+	} // End of text is modified
+	else
+	{
+		// Text is not modified
+
+		// Update return value
+		bResult = TRUE;
+
+	} // End of text is not modified
+
+	return bResult;
+
+} // End of function RichTextWindowCheckModified
+
 BOOL RichTextWindowCreate( HWND hWndParent, HINSTANCE hInstance, HFONT hFont )
 {
 	BOOL bResult = FALSE;
@@ -42,6 +75,9 @@ BOOL RichTextWindowCreate( HWND hWndParent, HINSTANCE hInstance, HFONT hFont )
 			// Clear global file path
 			g_lpszFilePath[ 0 ] = ( char )NULL;
 
+			// Clear modify flag
+			SendMessage( g_hWndRichEdit, EM_SETMODIFY, ( WPARAM )FALSE, ( LPARAM )NULL );
+
 		} // End of successfully created rich edit window
 
 	} // End of successfully loaded rich edit library
@@ -70,6 +106,31 @@ BOOL RichTextWindowFreeMemory()
 	return bResult;
 
 } // End of function RichTextWindowFreeMemory
+
+BOOL RichTextWindowIsFilePathValid()
+{
+	BOOL bResult = FALSE;
+
+	// See if file path contains text
+	if( g_lpszFilePath[ 0 ] )
+	{
+		// File path contains text
+
+		// Update return value
+		bResult = TRUE;
+
+	} // End of file path contains text
+
+	return bResult;
+
+} // End of function RichTextWindowIsFilePathValid
+
+BOOL RichTextWindowIsModified()
+{
+	// See if rich text window has been modified
+	return SendMessage( g_hWndRichEdit, EM_GETMODIFY, ( WPARAM )NULL, ( LPARAM )NULL );
+
+} // End of function RichTextWindowIsModified
 
 BOOL RichTextWindowLoad( HWND hWndParent )
 {
@@ -151,6 +212,9 @@ BOOL RichTextWindowLoad( LPCTSTR lpszFilePath )
 					// Update global file path
 					lstrcpy( g_lpszFilePath, lpszFilePath );
 
+					// Clear modify flag
+					SendMessage( g_hWndRichEdit, EM_SETMODIFY, ( WPARAM )FALSE, ( LPARAM )NULL );
+
 					// Update return value
 					bResult = TRUE;
 
@@ -188,6 +252,9 @@ BOOL RichTextWindowNew()
 
 	// Clear global file path
 	g_lpszFilePath[ 0 ] = ( char )NULL;
+
+	// Clear modify flag
+	SendMessage( g_hWndRichEdit, EM_SETMODIFY, ( WPARAM )FALSE, ( LPARAM )NULL );
 
 	return bResult;
 
@@ -247,6 +314,9 @@ BOOL RichTextWindowSave( HWND hWndParent, LPCTSTR lpszFilePath )
 
 						// Update global file path
 						lstrcpy( g_lpszFilePath, lpszFilePath );
+
+						// Clear modify flag
+						SendMessage( g_hWndRichEdit, EM_SETMODIFY, ( WPARAM )FALSE, ( LPARAM )NULL );
 
 						// Update return value
 						bResult = TRUE;

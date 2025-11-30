@@ -9,6 +9,7 @@
 
 #include "Resource.h"
 
+#include "Menu.h"
 #include "RichTextWindow.h"
 
 #define MAIN_WINDOW_CLASS_NAME													"Main Text Window Class"

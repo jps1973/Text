@@ -4,6 +4,38 @@
 
 #include <windows.h>
 
+BOOL UpdateFileSaveMenuItem( HWND hWnd )
+{
+	BOOL bResult = FALSE;
+
+	// See if file path is valid
+	if( RichTextWindowIsFilePathValid() )
+	{
+		// File path is valid
+
+		// Enable file save menu item
+		MenuEnableItem( hWnd, IDM_FILE_SAVE, TRUE );
+
+		// Update return value
+		bResult = TRUE;
+
+	} // End of file path is valid
+	else
+	{
+		// File path is not valid
+
+		// Disable file save menu item
+		MenuEnableItem( hWnd, IDM_FILE_SAVE, FALSE );
+
+		// Update return value
+		bResult = FALSE;
+
+	} // End of file path is not valid
+
+	return bResult;
+
+} // End of function UpdateFileSaveMenuItem
+
 int ShowAboutMessage( HWND hWndParent )
 {
 	int nResult = 0;
@@ -52,6 +84,7 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 			if( RichTextWindowCreate( hWndMain, hInstance, hFont ) )
 			{
 				// Successfully created rich text window
+
 			} // End of successfully created rich text window
 
 			// Break out of switch
@@ -113,8 +146,18 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 				{
 					// A file new command
 
-					// Create new file
-					RichTextWindowNew();
+					// Check that new file is ok
+					if( RichTextWindowCheckModified( hWndMain ) )
+					{
+						// New file is ok
+
+						// Create new file
+						RichTextWindowNew();
+
+						// Update file save menu item
+						UpdateFileSaveMenuItem( hWndMain );
+
+					} // End of new file is ok
 
 					// Break out of switch
 					break;
@@ -124,8 +167,18 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 				{
 					// A file load command
 
-					// Load file
-					RichTextWindowLoad( hWndMain );
+					// Check ok to load file
+					if( RichTextWindowCheckModified( hWndMain ) )
+					{
+						// Ok to load file
+
+						// Load file
+						RichTextWindowLoad( hWndMain );
+
+						// Update file save menu item
+						UpdateFileSaveMenuItem( hWndMain );
+
+					} // End of ok to load file
 
 					// Break out of switch
 					break;
@@ -138,6 +191,9 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 					// Save file
 					RichTextWindowSave( hWndMain );
 
+					// Update file save menu item
+					UpdateFileSaveMenuItem( hWndMain );
+
 					// Break out of switch
 					break;
 
@@ -148,6 +204,9 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 
 					// Save file as
 					RichTextWindowSaveAs( hWndMain );
+
+					// Update file save menu item
+					UpdateFileSaveMenuItem( hWndMain );
 
 					// Break out of switch
 					break;
@@ -354,6 +413,9 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE, LPTSTR, int nCmdShow )
 
 			// Update main window
 			UpdateWindow( hWndMain );
+
+			// Update file save menu item
+			UpdateFileSaveMenuItem( hWndMain );
 
 			// Main message loop
 			while( GetMessage( &msg, NULL, 0, 0 ) > 0 )

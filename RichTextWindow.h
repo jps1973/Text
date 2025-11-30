@@ -22,9 +22,17 @@
 #define RICH_TEXT_WINDOW_FILTER													"Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0";
 #define RICH_TEXT_WINDOW_DEFAULT_EXTENSION										"txt"
 
+#define RICH_TEXT_WINDOW_CHECK_MODOFIED_MESSAGE_TEXT							"Text has been modified.\r\n\r\nAre you sure that you want to continue?"
+
+BOOL RichTextWindowCheckModified( HWND hWndParent );
+
 BOOL RichTextWindowCreate( HWND hWndParent, HINSTANCE hInstance, HFONT hFont );
 
 BOOL RichTextWindowFreeMemory();
+
+BOOL RichTextWindowIsFilePathValid();
+
+BOOL RichTextWindowIsModified();
 
 BOOL RichTextWindowLoad( HWND hWndParent );
 
