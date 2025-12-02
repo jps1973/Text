@@ -167,7 +167,7 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 				{
 					// A file load command
 
-					// Check ok to load file
+					// Check if ok to load file
 					if( RichTextWindowCheckModified( hWndMain ) )
 					{
 						// Ok to load file
@@ -324,8 +324,15 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 		{
 			// A c message
 
-			// Destroy main window
-			DestroyWindow( hWndMain );
+			// Check if ok to close
+			if( RichTextWindowCheckModified( hWndMain ) )
+			{
+				// Ok to close
+
+				// Destroy main window
+				DestroyWindow( hWndMain );
+
+			} // End of ok to close
 
 			// Break out of switch
 			break;
