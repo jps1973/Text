@@ -26,7 +26,15 @@
 
 BOOL RichTextWindowCheckModified( HWND hWndParent );
 
+BOOL RichTextWindowCopy();
+
+BOOL RichTextWindowCut();
+
+BOOL RichTextWindowPaste();
+
 BOOL RichTextWindowCreate( HWND hWndParent, HINSTANCE hInstance, HFONT hFont );
+
+void RichTextWindowDelete();
 
 BOOL RichTextWindowFreeMemory();
 
@@ -42,10 +50,16 @@ BOOL RichTextWindowMove( int nLeft, int nTop, int nWidth, int nHeight, BOOL bRed
 
 BOOL RichTextWindowNew();
 
+BOOL RichTextWindowRedo();
+
 BOOL RichTextWindowSave( HWND hWndParent );
 
 BOOL RichTextWindowSave( HWND hWndParent, LPCTSTR lpszFilePath );
 
 BOOL RichTextWindowSaveAs( HWND hWndParent );
 
+void RichTextWindowSelect( int nStart = 0, int nEnd = -1 );
+
 HWND RichTextWindowSetFocus();
+
+BOOL RichTextWindowUndo();

@@ -223,6 +223,83 @@ LRESULT CALLBACK MainWindowProcedure( HWND hWndMain, UINT uMessage, WPARAM wPara
 					break;
 
 				} // End of a file exit command
+				case IDM_EDIT_UNDO:
+				{
+					// An edit undo command
+
+					// Undo
+					RichTextWindowUndo();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit undo command
+				case IDM_EDIT_REDO:
+				{
+					// An edit redo command
+
+					// Redo
+					RichTextWindowRedo();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit redo command
+				case IDM_EDIT_CUT:
+				{
+					// An edit cut command
+
+					// Cut
+					RichTextWindowCut();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit cut command
+				case IDM_EDIT_COPY:
+				{
+					// An edit copy command
+
+					// Copy
+					RichTextWindowCopy();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit copy command
+				case IDM_EDIT_PASTE:
+				{
+					// An edit paste command
+
+					// Paste
+					RichTextWindowPaste();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit paste command
+				case IDM_EDIT_DELETE:
+				{
+					// An edit delete command
+
+					// Delete text
+					RichTextWindowDelete()
+;
+					// Break out of switch
+					break;
+
+				} // End of an edit delete command
+				case IDM_EDIT_SELECT_ALL:
+				{
+					// An edit select all command
+
+					// Select all text
+					RichTextWindowSelect();
+
+					// Break out of switch
+					break;
+
+				} // End of an edit select all command
 				case IDM_HELP_ABOUT:
 				{
 					// A help about command
